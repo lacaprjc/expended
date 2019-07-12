@@ -1,0 +1,10 @@
+
+build/
+
+android/
+
+\.flutter-plugins
+
+\.packages
+
+pubspec\.lock

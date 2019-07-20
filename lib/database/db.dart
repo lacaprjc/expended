@@ -32,7 +32,8 @@ class AppDatabase {
     final appDocumentDirectory = await getApplicationDocumentsDirectory();
     final databasePath = join(appDocumentDirectory.path, 'accounts.db');
     _database = await databaseFactoryIo.openDatabase(databasePath);
-    print(_database.path);
+    // print(_database.path);
+    print('Current contents of db: \n$_database');
     _dbOpenCompleter.complete(_database);
   }
 }

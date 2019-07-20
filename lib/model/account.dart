@@ -5,7 +5,7 @@ class Account {
   String name;
   String accountType;
   double balance;
-  List<TransactionItem> transactions = List();
+  List<TransactionItem> transactions = List<TransactionItem>();
 
   Account({
     this.name = '',
@@ -17,7 +17,12 @@ class Account {
     name = json['name'],
     accountType = json['accountType'],
     balance = json['balance'] ?? 0.00,
-    transactions = json['transactions'] ?? [];
+    transactions = [] {
+      if (json['transactions'] != null && json['transactions'].isNotEmpty) {
+        transactions = json['transactions'];
+        print(transactions);
+      }
+    }
 
 
   Map<String, dynamic> toJson() {

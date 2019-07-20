@@ -1,21 +1,23 @@
-import 'package:flutter/material.dart';
+import 'package:expended/model/transaction_item.dart';
 
 class Account {
   int id;
   String name;
   String accountType;
   double balance;
+  List<TransactionItem> transactions = List();
 
   Account({
-    @required this.name,
-    @required this.accountType,
+    this.name = '',
+    this.accountType = '',
     this.balance = 0.00,
   });
 
   Account.fromJson(Map<String, dynamic> json) :
     name = json['name'],
     accountType = json['accountType'],
-    balance = json['balance'] ?? 0.00;
+    balance = json['balance'] ?? 0.00,
+    transactions = json['transactions'] ?? [];
 
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class Account {
       'name': name,
       'accountType': accountType,
       'balance': balance ?? 0.00,
+      'transactions': transactions ?? []
     };
   }
 }

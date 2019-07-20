@@ -2,7 +2,6 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
-import 'package:expended/widgets/account_form_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -41,6 +40,7 @@ class _AccountWidgetState extends State<AccountWidget> {
           ),
         ],
         child: ListTile(
+          onTap: () => Navigator.pushNamed(context, '/account', arguments: account),
           title: GradientText(
             account.name,
             gradient: LinearGradient(
@@ -62,11 +62,7 @@ class _AccountWidgetState extends State<AccountWidget> {
   }
 
   void _editAccountPressed() {
-    showBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AccountFormWidget(account)
-    );
+    Navigator.pushNamed(context, '/accountForm', arguments: account);
   }
 
   void _deleteAccountPressed() {

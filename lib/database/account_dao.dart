@@ -5,7 +5,7 @@ import 'package:sembast/sembast.dart';
 class AccountDao {
   static const String ACCOUNT_STORE_NAME = 'Accounts';
 
-  final _accountStore = intMapStoreFactory.store(ACCOUNT_STORE_NAME);
+  final StoreRef _accountStore = intMapStoreFactory.store(ACCOUNT_STORE_NAME);
 
   Future<Database> get _db async => await AppDatabase.instance.database;
 

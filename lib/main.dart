@@ -20,6 +20,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Montserrat',
           scaffoldBackgroundColor: AppColors.whisper,
+          accentColor: AppColors.seance,
+          primaryColor: AppColors.seance,
+          cursorColor: AppColors.seance,
+          iconTheme: IconThemeData(color: AppColors.govBay),
         ),
         // darkTheme: ThemeData.dark(),
         initialRoute: '/',

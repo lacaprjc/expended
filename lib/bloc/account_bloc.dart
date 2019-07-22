@@ -19,7 +19,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } else if (event is AddAccount) {
       await _accountDao.insert(event.account);
     } else if (event is UpdateAccount) {
-      await _accountDao.update(event.account);
+      await _accountDao.update(event.account, event.fieldsToUpdate);
     } else if (event is DeleteAccount) {
       await _accountDao.delete(event.account);
     }

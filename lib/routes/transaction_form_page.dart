@@ -1,23 +1,25 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
+import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class TransactionFormPage extends StatefulWidget {
-  final TransactionItem transaction;
-  
-  TransactionFormPage(this.transaction, {Key key}) : super(key: key);
+  final MapEntry<Account, TransactionItem> accountAndTransaction;
+  TransactionFormPage(this.accountAndTransaction, {Key key}) : super(key: key);
 
   TransactionFormPageState createState() => TransactionFormPageState();
 }
 
 class TransactionFormPageState extends State<TransactionFormPage> {
-  TransactionItem _transaction;
-  TransactionItem get transaction => widget.transaction ?? _transaction;
+  Account get account => widget.accountAndTransaction.key;
+  TransactionItem get transaction => widget.accountAndTransaction.value;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -25,10 +27,11 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     borderSide: BorderSide(color: AppColors.govBay)
   );
 
+  // TODO delete the check and print
   @override
   void initState() { 
     if (transaction == null) {
-      _transaction = TransactionItem();
+      print('should not reach this ever');
     }
 
     super.initState();
@@ -38,7 +41,16 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       
-      print(transaction.toJson());
+      account.transactions.add(transaction);
+      account.balance += transaction.amount;
+      BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account, {
+        'balance': account.balance,
+        'transactions': account.transactionsToJson()
+      }));
+
+      Navigator.pop(context);
+      
+      // print(transaction.toJson());
     }
   }
 
@@ -259,8 +271,9 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     return Scaffold(
       // backgroundColor: AppColors.seance,
       body: _buildBody(),
-      bottomNavigationBar: CustomBottomNavigationBar('transactionForm',
-        title: widget.transaction != null ? 'Edit Transaction' : 'New Transaction',
+      bottomNavigationBar: CustomBottomNavigationBar(
+        'transactionForm',
+        title: transaction.name,
       ),
     );
   }

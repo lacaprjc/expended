@@ -29,7 +29,7 @@ class _AccountsPageState extends State<AccountsPage> {
           bloc: _accountBloc,
           builder: (context, AccountState state) {
             if (state is AccountsLoading) {
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator());
             } else if (state is AccountsLoaded) {
               return ListView.separated(
                 itemCount: state.accounts.length,

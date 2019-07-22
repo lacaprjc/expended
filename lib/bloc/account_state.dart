@@ -16,5 +16,3 @@ class AccountsLoaded extends AccountState {
 
   AccountsLoaded(this.accounts) : super([accounts]);
 }
-
-

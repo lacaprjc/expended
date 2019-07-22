@@ -13,9 +13,10 @@ class AccountDao {
     await _accountStore.add(await _db, account.toJson());
   }
 
-  Future update(Account account) async {
+  // TODO: Make a function to take in an account and the fields to update
+  Future update(Account account, Map<String, dynamic> fieldsToUpdate) async {
     final Finder finder = Finder(filter: Filter.byKey(account.id));
-    await _accountStore.update(await _db, account.toJson(), finder: finder);
+    await _accountStore.update(await _db, fieldsToUpdate, finder: finder);
   }
 
   Future delete(Account account) async {
@@ -26,13 +27,14 @@ class AccountDao {
   Future<List<Account>> getAll() async {
     final Finder finder = Finder(sortOrders: [SortOrder('name')]);
 
-    final List<RecordSnapshot> recordSnapshots = await _accountStore.find(await _db, finder: finder);
+    final List<RecordSnapshot> recordSnapshots = await _accountStore.find(await _db);
 
     return recordSnapshots.map((RecordSnapshot snapshot) {
       final Account account = Account.fromJson(snapshot.value);
-      print('Loaded ' + account.name);
-
       account.id = snapshot.key;
+      print('Loaded ${account.name} with id: ${account.id}');
+      // print(account.toJson());
+
       return account;
     }).toList();
   }

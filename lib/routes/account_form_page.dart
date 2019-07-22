@@ -43,7 +43,7 @@ class _AccountFormPageState extends State<AccountFormPage> {
       if (widget.account == null) {
         BlocProvider.of<AccountBloc>(context).dispatch(AddAccount(account));
       } else {
-        BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account));
+        BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account, account.toJson()));
       }
         
       Navigator.pop(context);

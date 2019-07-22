@@ -7,6 +7,7 @@ import 'package:sembast/sembast_io.dart';
 class AppDatabase {
   // singleton instance
   static final AppDatabase _singleton = AppDatabase._();
+  static const String DATABASE_FILENAME = 'accounts.db';
 
   // singleton accessor
   static AppDatabase get instance => _singleton;
@@ -30,7 +31,7 @@ class AppDatabase {
 
   Future _openDatabase() async {
     final appDocumentDirectory = await getApplicationDocumentsDirectory();
-    final databasePath = join(appDocumentDirectory.path, 'accounts.db');
+    final databasePath = join(appDocumentDirectory.path, DATABASE_FILENAME);
     _database = await databaseFactoryIo.openDatabase(databasePath);
     // print(_database.path);
     print('Current contents of db: \n$_database');

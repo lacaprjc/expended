@@ -1,6 +1,6 @@
 class TransactionItem {
   int id;
-  int forAccount;
+  // int forAccount;
   double amount;
   String date;
   String time;
@@ -11,15 +11,15 @@ class TransactionItem {
     this.date = '',
     this.time = '',
     this.name = '',
-    this.forAccount
+    // this.forAccount
   });
 
   TransactionItem.fromJson(Map<String, dynamic> json) :
     name = json['name'],
     date = json['date'],
     time = json['time'],
-    amount = json['amount'],
-    forAccount = json['forAccount'];
+    amount = json['amount'];
+    // forAccount = json['forAccount'];
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -27,7 +27,7 @@ class TransactionItem {
       'name': name,
       'date': date,
       'time': time,
-      'forAccount': forAccount
+      // 'forAccount': forAccount
     };
   }
 }

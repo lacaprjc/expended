@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:expended/model/account.dart';
+import 'package:expended/model/transaction_item.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -17,12 +18,21 @@ class AddAccount extends AccountEvent {
 
 class UpdateAccount extends AccountEvent {
   final Account account;
+  final Map<String, dynamic> fieldsToUpdate;
 
-  UpdateAccount(this.account) : super([account]);
+  UpdateAccount(this.account, this.fieldsToUpdate) : super([account, fieldsToUpdate]);
 }
 
 class DeleteAccount extends AccountEvent {
   final Account account;
 
   DeleteAccount(this.account) : super([account]);
+}
+
+// transactions
+class AddTransaction extends AccountEvent {
+  final Account account;
+  final TransactionItem transaction;
+
+  AddTransaction(this.account, this.transaction) : super([account, transaction]);
 }

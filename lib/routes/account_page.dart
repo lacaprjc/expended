@@ -1,9 +1,12 @@
+import 'package:expended/bloc/bloc.dart';
 import 'package:expended/bloc/transactionitem_bloc.dart';
 import 'package:expended/bloc/transactionitem_event.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
+import 'package:expended/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountPage extends StatefulWidget {
   final Account account;
@@ -17,21 +20,23 @@ class _AccountPageState extends State<AccountPage> {
   Account get account => widget.account;
   TransactionItemBloc _transactionBloc;
 
+
   @override
   void initState() { 
     super.initState();
-    _transactionBloc = TransactionItemBloc();
+    _transactionBloc = BlocProvider.of<TransactionItemBloc>(context);
     _transactionBloc.dispatch(LoadTransactions(account.id));
   }
   
-  double _calcBalance() {
-    double balance = 10380.28;
-    
+  void _calcBalance() {
+    double balance = 0.00;
+
     account.transactions.forEach((TransactionItem item) {
       balance += item.amount;
     });
 
-    return balance;
+    account.balance = balance;
+    print(balance);
   }
 
   Widget _buildBalance() {
@@ -48,7 +53,7 @@ class _AccountPageState extends State<AccountPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                '\$ ${_calcBalance().toStringAsFixed(2)}',
+                '\$ ${account.balance.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w300
@@ -74,22 +79,22 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Widget _buildBody() {
+    _calcBalance();
     return SafeArea(
       child: Container(
-        child: ListView.builder(
-          itemCount: account.transactions.length + 1,
-          itemBuilder: (context, int i) {
-            if (i == 0) {
-              return _buildBalance();
-            }
-
-            return Container(
-              child: Card(
-                
+        child: Column(
+          children: <Widget>[
+            _buildBalance(),
+            Expanded(
+              child: ListView.builder(
+                itemCount: account.transactions.length,
+                itemBuilder: (context, i) {
+                  return TransactionWidget(account.transactions[i]);
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ],
+        )
       )
     );
   }
@@ -98,7 +103,11 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(),
-      bottomNavigationBar: CustomBottomNavigationBar('accountPage', title: account.name,),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        'accountPage', 
+        title: account.name, 
+        forAccount: account,
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:expended/bloc/account_bloc.dart';
+import 'package:expended/bloc/transactionitem_bloc.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:expended/route_generator.dart';
@@ -13,8 +14,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      builder: (context) => AccountBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AccountBloc>(
+          builder: (BuildContext context) => AccountBloc(),
+        ),
+        BlocProvider<TransactionItemBloc>(
+          builder: (BuildContext context) => TransactionItemBloc(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

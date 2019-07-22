@@ -24,6 +24,12 @@ class TransactionItemDao {
     await _transactionStore.delete(await _db, finder: finder);
   }
 
+  Future<TransactionItem> getById(int id) async {
+    final Finder finder = Finder(filter: Filter.byKey(id));
+    final RecordSnapshot recordSnapshot = await _transactionStore.findFirst(await _db, finder: finder);
+    return TransactionItem.fromJson(recordSnapshot.value);
+  }
+
   Future<List<TransactionItem>> getAll() async {
     final Finder finder = Finder(sortOrders: [SortOrder('date')]);
 
@@ -31,7 +37,7 @@ class TransactionItemDao {
 
     return recordSnaspshots.map((RecordSnapshot snapshot) {
       final TransactionItem transaction = TransactionItem.fromJson(snapshot.value);
-      print('Loaded item ' + transaction.amount.toString());
+      print('Loaded item ${transaction.name} for ${transaction.amount}');
 
       transaction.id = snapshot.key;
       return transaction;
@@ -45,7 +51,7 @@ class TransactionItemDao {
 
     return recordSnaspshots.map((RecordSnapshot snapshot) {
       final TransactionItem transaction = TransactionItem.fromJson(snapshot.value);
-      print('Loaded item ' + transaction.amount.toString());
+      print('Loaded item ${transaction.name} for ${transaction.amount} with id: ${transaction.id}');
 
       transaction.id = snapshot.key;
       return transaction;

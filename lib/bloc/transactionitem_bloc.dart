@@ -18,7 +18,7 @@ class TransactionItemBloc extends Bloc<TransactionItemEvent, TransactionItemStat
       _transactionDao.forAccount = event.accountId;
       yield TransactionsLoading();
     } else if (event is AddTransaction) {
-      await _transactionDao.insert(event.transaction);
+      // await _transactionDao.insert(event.transaction);
     } else if (event is UpdateTransaction) {
       await _transactionDao.update(event.transaction);
     } else if (event is DeleteTransaction) {
@@ -29,6 +29,7 @@ class TransactionItemBloc extends Bloc<TransactionItemEvent, TransactionItemStat
   }
 
   Stream<TransactionItemState> _reloadTransactions() async* {
+    print('Reloading transactions');
     final List<TransactionItem> transactions = await _transactionDao.getAllFromAccount(_transactionDao.forAccount);
     yield TransactionsLoaded(transactions);
   }

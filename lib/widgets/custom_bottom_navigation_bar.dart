@@ -1,13 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:expended/model/account.dart';
+import 'package:expended/model/transaction_item.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final String type;
   final String title;
-  final int forAccount;
+  final Account forAccount;
 
-  const CustomBottomNavigationBar(this.type, {this.title = 'Accounts', this.forAccount = 0, Key key}) : super(key: key);
+  const CustomBottomNavigationBar(this.type, {this.title = 'Accounts', this.forAccount, Key key}) : super(key: key);
 
   Widget _buildAddAccountItem(BuildContext context) {
     return IconButton(
@@ -18,10 +20,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
   }
 
   Widget _buildAddTransactionItem(BuildContext context) {
+    MapEntry<Account, TransactionItem> accountAndTransaction = MapEntry<Account, TransactionItem>(forAccount, TransactionItem());
+
     return IconButton(
       icon: Icon(EvaIcons.plusSquareOutline),
       color: Colors.white,
-      onPressed: () => Navigator.pushNamed(context, "/transactionForm", arguments: forAccount),
+      onPressed: () => Navigator.pushNamed(context, "/transactionForm", arguments: accountAndTransaction),
     );
   }
 

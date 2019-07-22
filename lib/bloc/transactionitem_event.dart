@@ -13,11 +13,17 @@ class LoadTransactions extends TransactionItemEvent {
   LoadTransactions(this.accountId) : super([accountId]);
 }
 
-class AddTransaction extends TransactionItemEvent {
-  final TransactionItem transaction;
+// class LoadTransaction extends TransactionItemEvent {
+//   final int transactionId;
 
-  AddTransaction(this.transaction) : super([transaction]);
-}
+//   LoadTransaction(this.transactionId) : super([transactionId]);
+// }
+
+// class AddTransaction extends TransactionItemEvent {
+//   final TransactionItem transaction;
+
+//   AddTransaction(this.transaction) : super([transaction]);
+// }
 
 class UpdateTransaction extends TransactionItemEvent {
   final TransactionItem transaction;

@@ -5,7 +5,7 @@ import 'package:expended/routes/routes.dart';
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-
+    
     switch (settings.name) {
       case '/':
       case '/accounts':

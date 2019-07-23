@@ -27,16 +27,6 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     borderSide: BorderSide(color: AppColors.govBay)
   );
 
-  // TODO delete the check and print
-  @override
-  void initState() { 
-    if (transaction == null) {
-      print('should not reach this ever');
-    }
-
-    super.initState();
-  }
-
   void validateForm() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();

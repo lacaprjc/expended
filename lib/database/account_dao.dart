@@ -12,8 +12,7 @@ class AccountDao {
   Future insert(Account account) async {
     await _accountStore.add(await _db, account.toJson());
   }
-
-  // TODO: Make a function to take in an account and the fields to update
+  
   Future update(Account account, Map<String, dynamic> fieldsToUpdate) async {
     final Finder finder = Finder(filter: Filter.byKey(account.id));
     await _accountStore.update(await _db, fieldsToUpdate, finder: finder);
@@ -25,7 +24,7 @@ class AccountDao {
   }
 
   Future<List<Account>> getAll() async {
-    final Finder finder = Finder(sortOrders: [SortOrder('name')]);
+    // final Finder finder = Finder(sortOrders: [SortOrder('name')]);
 
     final List<RecordSnapshot> recordSnapshots = await _accountStore.find(await _db);
 

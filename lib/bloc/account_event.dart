@@ -8,7 +8,13 @@ abstract class AccountEvent extends Equatable {
   AccountEvent([List props = const []]) : super(props);
 }
 
-class LoadAccounts extends AccountEvent {}
+class LoadAllAccounts extends AccountEvent {}
+
+class LoadAccount extends AccountEvent {
+  final Account account;
+
+  LoadAccount(this.account) : super([account]);
+}
 
 class AddAccount extends AccountEvent {
   final Account account;

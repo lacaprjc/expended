@@ -9,7 +9,19 @@ abstract class AccountState extends Equatable {
 
 class AccountsInitial extends AccountState {}
 
-class AccountsLoading extends AccountState {}
+class AccountsAllLoading extends AccountState {}
+
+class AccountLoading extends AccountState {
+  final Account account;
+
+  AccountLoading(this.account) : super([account]);
+}
+
+class AccountLoaded extends AccountState {
+  final Account account;
+
+  AccountLoaded(this.account) : super([account]);
+}
 
 class AccountsLoaded extends AccountState {
   final List<Account> accounts;

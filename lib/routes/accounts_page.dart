@@ -13,35 +13,47 @@ class AccountsPage extends StatefulWidget {
 }
 
 class _AccountsPageState extends State<AccountsPage> {
-  AccountBloc _accountBloc;
-
   @override
-  void initState() { 
+  void initState() {
     super.initState();
-    _accountBloc = BlocProvider.of<AccountBloc>(context);
-    _accountBloc.dispatch(LoadAccounts());
+    BlocProvider.of<AccountBloc>(context).dispatch(LoadAllAccounts());
   }
 
   Widget _buildBody() {
     return SafeArea(
       child: Container(
-        child: BlocBuilder(
-          bloc: _accountBloc,
-          builder: (context, AccountState state) {
-            if (state is AccountsLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is AccountsLoaded) {
-              return ListView.separated(
-                itemCount: state.accounts.length,
-                separatorBuilder: (context, i) => Divider(height: 0.1, indent: 40, color: AppColors.seance,),
-                itemBuilder: (context, i) {
-                  return AccountWidget(state.accounts[i]);
-                },
-              );
-            }
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: BlocBuilder(
+            bloc: BlocProvider.of<AccountBloc>(context),
+            condition: (AccountState previousState, AccountState currentState) {
+              return (currentState is AccountsAllLoading ||
+                  currentState is AccountsLoaded);
+            },
+            builder: (context, AccountState state) {
+              if (state is AccountsAllLoading) {
+                return Center(child: CircularProgressIndicator());
+              } else if (state is AccountsLoaded) {
+                return ListView.separated(
+                  itemCount: state.accounts.length,
+                  separatorBuilder: (context, i) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(
+                        height: 0.1,
+                        color: AppColors.seance,
+                      ));
+                  },
+                  itemBuilder: (context, i) {
+                    return AccountWidget(state.accounts[i]);
+                  },
+                );
+              }
 
-            return Container();
-          },
+              return Container();
+            },
+          ),
         ),
       ),
     );

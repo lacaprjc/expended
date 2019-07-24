@@ -8,13 +8,13 @@ class Account {
   String name;
   String accountType;
   double balance;
-  List<int> transactionIds = List<int>();
   List<TransactionItem> transactions = List<TransactionItem>();
 
   Account({
     this.name = '',
     this.accountType = '',
     this.balance = 0.00,
+    this.transactions
   });
 
   Account.fromJson(Map<String, dynamic> json) :

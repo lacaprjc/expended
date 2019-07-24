@@ -1,6 +1,4 @@
 import 'package:expended/bloc/bloc.dart';
-import 'package:expended/bloc/transactionitem_bloc.dart';
-import 'package:expended/bloc/transactionitem_event.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
@@ -18,16 +16,15 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   Account get account => widget.account;
-  TransactionItemBloc _transactionBloc;
-
 
   @override
   void initState() { 
     super.initState();
-    _transactionBloc = BlocProvider.of<TransactionItemBloc>(context);
-    _transactionBloc.dispatch(LoadTransactions(account.id));
+
+    BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
+    // _calcBalance();
   }
-  
+
   void _calcBalance() {
     double balance = 0.00;
 
@@ -36,7 +33,6 @@ class _AccountPageState extends State<AccountPage> {
     });
 
     account.balance = balance;
-    print(balance);
   }
 
   Widget _buildBalance() {
@@ -78,22 +74,48 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody() {    
     _calcBalance();
     return SafeArea(
       child: Container(
-        child: Column(
-          children: <Widget>[
-            _buildBalance(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: account.transactions.length,
-                itemBuilder: (context, i) {
-                  return TransactionWidget(account.transactions[i]);
-                },
-              ),
-            ),
-          ],
+        child: BlocBuilder(
+          bloc: BlocProvider.of<AccountBloc>(context),
+          condition: (AccountState previousState, AccountState currentState) {
+            return (currentState is AccountLoading) || (currentState is AccountLoaded);
+          },
+          builder: (context, AccountState state) {
+            if (state is AccountLoading) {
+              print('loading...');
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is AccountLoaded) {
+              print('Loaded Account: ${account.name}');
+              return Column(
+                children: <Widget>[
+                  _buildBalance(),
+                  Expanded(
+                    child: Card(
+                      margin: EdgeInsets.symmetric(horizontal: 10,),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: ListView.builder(
+                        itemCount: account.transactions.length,
+                        itemBuilder: (context, i) {
+                          return TransactionWidget(
+                            MapEntry<Account, TransactionItem>(account, account.transactions[i])
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return Container();
+          }
         )
       )
     );

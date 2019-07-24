@@ -31,9 +31,8 @@ class AccountDao {
     return recordSnapshots.map((RecordSnapshot snapshot) {
       final Account account = Account.fromJson(snapshot.value);
       account.id = snapshot.key;
-      print('Loaded ${account.name} with id: ${account.id}');
-      // print(account.toJson());
-
+      // print('Loaded ${account.name} with id: ${account.id}');
+      
       return account;
     }).toList();
   }

@@ -21,41 +21,42 @@ class _AccountWidgetState extends State<AccountWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            icon: EvaIcons.editOutline,
-            caption: 'Edit',
-            color: Colors.deepPurpleAccent,
-            onTap: _editAccountPressed,
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          icon: EvaIcons.editOutline,
+          caption: 'Edit',
+          color: Colors.deepPurpleAccent,
+          onTap: _editAccountPressed,
+        ),
+        IconSlideAction(
+          icon: EvaIcons.trash2Outline,
+          caption: 'Delete',
+          color: Colors.red,
+          onTap: _deleteAccountPressed,
+        ),
+      ],
+      child: ListTile(
+        onTap: () =>
+            Navigator.pushNamed(context, '/account', arguments: account),
+        title: GradientText(
+          account.name,
+          gradient:
+              LinearGradient(colors: [AppColors.seance, AppColors.redViolet]),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          '\t\t\t${account.accountType}',
+          style: TextStyle(
+              fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),
+        ),
+        trailing: GradientText(
+          '\$${account.balance.toStringAsFixed(2)}',
+          gradient: LinearGradient(
+            colors: [AppColors.seance, AppColors.redViolet],
           ),
-          IconSlideAction(
-            icon: EvaIcons.trash2Outline,
-            caption: 'Delete',
-            color: Colors.red,
-            onTap: _deleteAccountPressed,
-          ),
-        ],
-        child: ListTile(
-          onTap: () => Navigator.pushNamed(context, '/account', arguments: account),
-          title: GradientText(
-            account.name,
-            gradient: LinearGradient(
-              colors: [AppColors.seance, AppColors.redViolet]
-            ),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-          ),
-          subtitle: Text('\t\t\t${account.accountType}', style: TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),),
-          trailing: GradientText(
-            '\$${account.balance.toStringAsFixed(2)}', 
-            gradient: LinearGradient(
-              colors: [AppColors.seance, AppColors.redViolet],
-            ),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
     );
@@ -67,33 +68,34 @@ class _AccountWidgetState extends State<AccountWidget> {
 
   void _deleteAccountPressed() {
     showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text('Are you sure?', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-              FlatButton.icon(
-                textColor: Colors.red,
-                label: Text('No'),
-                icon: Icon(EvaIcons.stopCircle),
-                onPressed: () => Navigator.pop(context),
-              ),
-              FlatButton.icon(
-                textColor: Colors.green,
-                label: Text('Yes'),
-                icon: Icon(EvaIcons.checkmarkCircle),
-                onPressed: () {
-                  BlocProvider.of<AccountBloc>(context).dispatch(DeleteAccount(account));
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          ),
-        );
-      }
-    );
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text('Are you sure?',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                FlatButton.icon(
+                  textColor: Colors.red,
+                  label: Text('No'),
+                  icon: Icon(EvaIcons.stopCircle),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                FlatButton.icon(
+                  textColor: Colors.green,
+                  label: Text('Yes'),
+                  icon: Icon(EvaIcons.checkmarkCircle),
+                  onPressed: () {
+                    BlocProvider.of<AccountBloc>(context).dispatch(DeleteAccount(account));
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
+          );
+        });
   }
 }

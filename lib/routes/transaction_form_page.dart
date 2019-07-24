@@ -29,9 +29,13 @@ class TransactionFormPageState extends State<TransactionFormPage> {
 
   void validateForm() {
     if (_formKey.currentState.validate()) {
+      bool isEdit = transaction.amount != 0; // This tells whether the transaction is new or is being edited
       _formKey.currentState.save();
       
-      account.transactions.add(transaction);
+      if (!isEdit){ // new
+       account.transactions.add(transaction);
+      }
+      
       account.balance += transaction.amount;
       BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account, {
         'balance': account.balance,
@@ -39,8 +43,6 @@ class TransactionFormPageState extends State<TransactionFormPage> {
       }));
 
       Navigator.pop(context);
-      
-      // print(transaction.toJson());
     }
   }
 
@@ -58,6 +60,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
           Container(
             width: 100,
             child: TextFormField(
+              initialValue: transaction.amount != 0 ? transaction.amount.toString() : '',
               keyboardType: TextInputType.number,
               style: TextStyle(
                 fontSize: 28,
@@ -87,6 +90,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
       margin: EdgeInsets.symmetric(horizontal: 40),
       padding: EdgeInsets.only(bottom: 20),
       child: TextFormField(
+        initialValue: transaction.name.isNotEmpty ? transaction.name : '',
         textAlign: TextAlign.center,
         textCapitalization: TextCapitalization.words,
         style: TextStyle(
@@ -120,13 +124,15 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               margin: EdgeInsets.symmetric(horizontal: 40),
               width: 180,
               child: DateTimeField(
+                initialValue: transaction.date.isNotEmpty 
+                  ? DateTime.parse(transaction.date)
+                  : DateTime.now(),
                 style: TextStyle(
                   color: AppColors.govBay,
                   fontSize: 18,
                   fontWeight: FontWeight.w500
                 ),
                 format: DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY),
-                initialValue: DateTime.now(),
                 readOnly: true,
                 decoration: InputDecoration(
                   border: inputBorder,
@@ -155,8 +161,16 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               margin: EdgeInsets.symmetric(horizontal: 40),
               width: 180,
               child: DateTimeField(
+                initialValue: transaction.time.isNotEmpty
+                  ? DateTimeField.convert(
+                    TimeOfDay(
+                      hour: int.parse(transaction.time.substring(0, transaction.time.indexOf(':'))),
+                      minute: int.parse(transaction.time.split(':')[1])
+                    )
+                  )
+                  : DateTime.now()
+                ,
                 format: DateFormat(DateFormat.HOUR_MINUTE),
-                initialValue: DateTime.now(),
                 style: TextStyle(
                   color: AppColors.govBay,
                   fontSize: 18,

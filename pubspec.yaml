@@ -21,6 +21,10 @@ dependencies:
   gradient_text: ^1.0.2
   datetime_picker_formfield: ^0.4.0
   cupertino_icons: ^0.1.2
+  # flutter_icons: ^0.1.4
+  flutter_vector_icons: ^0.2.0
+  image_picker: ^0.6.0+17
+
 
 dev_dependencies:
   flutter_test:

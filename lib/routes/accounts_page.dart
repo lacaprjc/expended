@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:expended/widgets/account_widget.dart';
@@ -22,9 +23,10 @@ class _AccountsPageState extends State<AccountsPage> {
   Widget _buildBody() {
     return SafeArea(
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Card(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: BlocBuilder(
             bloc: BlocProvider.of<AccountBloc>(context),
             condition: (AccountState previousState, AccountState currentState) {
@@ -33,8 +35,16 @@ class _AccountsPageState extends State<AccountsPage> {
             },
             builder: (context, AccountState state) {
               if (state is AccountsAllLoading) {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator()
+                );
               } else if (state is AccountsLoaded) {
+                if (state.accounts.isEmpty) {
+                  return Center(
+                    child: AutoSizeText('Press the + Button to start adding accounts!'),
+                  );
+                }
+
                 return ListView.separated(
                   itemCount: state.accounts.length,
                   separatorBuilder: (context, i) {

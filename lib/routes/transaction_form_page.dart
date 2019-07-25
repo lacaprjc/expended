@@ -1,5 +1,4 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
@@ -8,6 +7,7 @@ import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:intl/intl.dart';
 
 class TransactionFormPage extends StatefulWidget {
@@ -119,7 +119,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(EvaIcons.calendarOutline, size: 30),
+            Icon(Foundation.calendar, size: 30),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 40),
               width: 180,
@@ -156,7 +156,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(EvaIcons.clockOutline, size: 30),
+            Icon(Foundation.clock, size: 30),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 40),
               width: 180,
@@ -214,7 +214,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
                   fontSize: 22
                 ),
               ),
-              icon: Icon(EvaIcons.closeCircleOutline),
+              icon: Icon(MaterialCommunityIcons.cancel),
               onPressed: () => Navigator.pop(context),
             ),
             FlatButton.icon(
@@ -225,7 +225,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
                   fontSize: 22
                 ),
               ),
-              icon: Icon(EvaIcons.checkmarkCircle2Outline),
+              icon: Icon(MaterialCommunityIcons.check_circle_outline),
               onPressed: validateForm,
             ),
           ],
@@ -252,7 +252,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     return SafeArea(
       child: Container(
         margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-        height: double.infinity,
+        // height: double.infinity,
         // color: Colors.red,
         child: Card(
           shape: RoundedRectangleBorder(

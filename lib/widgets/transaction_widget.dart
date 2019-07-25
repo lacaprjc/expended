@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expended/bloc/bloc.dart';
+import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ class _TransactionWidgetState extends State<TransactionWidget> {
       ],
       child: ListTile(
         onTap: _transactionPressed,
+        leading: Icon(EvaIcons.bookmark, color: AppColors.govBay,),
         title: AutoSizeText(
           transaction.name,
         ),

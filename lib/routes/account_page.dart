@@ -1,3 +1,5 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
@@ -5,6 +7,7 @@ import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:expended/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class AccountPage extends StatefulWidget {
   final Account account;
@@ -16,11 +19,12 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   Account get account => widget.account;
+  Map<String, List<TransactionItem>> sortedTransactions;
 
   @override
   void initState() { 
     super.initState();
-
+    sortedTransactions = Map();
     BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
     // _calcBalance();
   }
@@ -33,6 +37,64 @@ class _AccountPageState extends State<AccountPage> {
     });
 
     account.balance = balance;
+  }
+
+  // takes the formatted date (yyyy-mm-dd) and returns 'today' or day of week
+  String formatDate(String date) {
+    String formattedDate = '';
+    DateTime dateTime = DateTime.parse(date);
+    Duration difference = dateTime.difference(DateTime.now());
+
+    // print(difference.inDays);
+    if (difference.inDays == 0) {
+      formattedDate = 'Today';
+    }
+    else if (difference.inDays.isNegative) { // before today
+      if (difference.inDays == -1) {
+        formattedDate = 'Yesterday';
+      } else if (difference.inDays < -1 && difference.inDays > -5) {
+        formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY).format(dateTime);
+      } else {
+        formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
+      }
+    } else { // future transactions
+      formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
+    }
+
+    return formattedDate;
+  }
+
+  void sortTransactionsByDate([bool ascending = true]) {
+    sortedTransactions.clear();
+
+    for(TransactionItem transaction in account.transactions) {
+      if (sortedTransactions[formatDate(transaction.date)] == null) {
+        sortedTransactions[formatDate(transaction.date)] = List();
+      }
+      sortedTransactions[formatDate(transaction.date)].add(transaction);
+    }
+
+    sortedTransactions.forEach((String formattedDate, List<TransactionItem> transactions) {
+      if (transactions.length < 2) 
+      return;
+
+      transactions.sort((TransactionItem item1, TransactionItem item2) {
+        int result = DateTime.parse(item1.date).compareTo(DateTime.parse(item2.date));
+        
+        if (result == 0) { // same day but different time
+          List<String> item1TimeSplit = item1.time.split(':');
+          List<String> item2TimeSplit = item2.time.split(':');
+          
+          result = DateTimeField.convert((TimeOfDay(hour: int.parse(item1TimeSplit[0]), minute: int.parse(item1TimeSplit[1]))))
+            .compareTo(DateTimeField.convert((TimeOfDay(hour: int.parse(item2TimeSplit[0]), minute: int.parse(item2TimeSplit[1])))));
+        }
+
+        if (ascending) 
+          return -result;
+        
+        return result;
+      });
+    });
   }
 
   Widget _buildBalance() {
@@ -74,6 +136,56 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  List<Widget> _buildSortedTransactions() {
+    List<Widget> transactionsWidgets = List();
+
+    sortedTransactions.forEach((String formattedDate, List<TransactionItem> transactions) {
+      transactionsWidgets.add(
+        Container(
+          margin: EdgeInsets.only(left: 14),
+          child: AutoSizeText(
+            formattedDate,
+            style: TextStyle(
+              fontWeight: FontWeight.w200,
+              // color: AppColors.seance
+            ),
+          )
+        )
+      );
+      transactions.forEach((TransactionItem transaction) {
+        transactionsWidgets.add(TransactionWidget(
+          MapEntry<Account, TransactionItem>(account, transaction)
+        ));
+      });
+    });
+
+    return transactionsWidgets;
+  }
+
+  Widget _buildTransactions() {
+    return Column(
+      children: <Widget>[
+        _buildBalance(),
+        Expanded(
+          child: Card(
+            margin: EdgeInsets.symmetric(horizontal: 10,),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)
+            ),
+            child: account.transactions.isEmpty
+              ? Center(
+                  child: AutoSizeText('Press the + icon to start adding transactions!'),
+                )
+              : ListView(
+                  padding: EdgeInsets.only(top: 10),
+                  children: _buildSortedTransactions(),
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildBody() {    
     _calcBalance();
     return SafeArea(
@@ -91,27 +203,8 @@ class _AccountPageState extends State<AccountPage> {
               );
             } else if (state is AccountLoaded) {
               print('Loaded Account: ${account.name}');
-              return Column(
-                children: <Widget>[
-                  _buildBalance(),
-                  Expanded(
-                    child: Card(
-                      margin: EdgeInsets.symmetric(horizontal: 10,),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: ListView.builder(
-                        itemCount: account.transactions.length,
-                        itemBuilder: (context, i) {
-                          return TransactionWidget(
-                            MapEntry<Account, TransactionItem>(account, account.transactions[i])
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              );
+              sortTransactionsByDate();
+              return _buildTransactions();
             }
 
             return Container();

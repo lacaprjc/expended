@@ -1,5 +1,6 @@
 import 'package:expended/bloc/account_bloc.dart';
 import 'package:expended/bloc/bloc.dart';
+import 'package:expended/misc/account_details.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
@@ -16,15 +17,6 @@ class AccountFormPage extends StatefulWidget {
 }
 
 class _AccountFormPageState extends State<AccountFormPage> {
-  // final OutlineInputBorder errorInputBorder = OutlineInputBorder(
-  //   borderSide: BorderSide(color: Colors.red)
-  // );
-
-  // final OutlineInputBorder inputBorder = OutlineInputBorder(
-  //   borderSide: BorderSide(color: AppColors.seance)
-  // );
-
-
   Account _account;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -42,269 +34,246 @@ class _AccountFormPageState extends State<AccountFormPage> {
   void validateForm() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      
+
       if (widget.account == null) {
         BlocProvider.of<AccountBloc>(context).dispatch(AddAccount(account));
       } else {
-        BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account, account.toJson()));
+        BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(
+          account,
+          account.toJson(),
+        ));
       }
-        
+
       Navigator.pop(context);
     }
   }
 
-  Widget _buildBody() {
-    return SafeArea(
-      child: Container(
-        margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-        // height: double.infinity,
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10)
-          ),
-          child: Form(
-            key: _formKey,
-            child: _buildForm(),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildForm() {
-    return Container(
-      child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          _buildNameField(),
-          // Divider(indent: 100, color: AppColors.seance),
-          _buildTypeField(),
-          _buildStartingBalanceField(),
-          _buildConfirmationField(),
-        ],
+    return DefaultTextStyle(
+      style: TextStyle(
+        // fontSize: 20,
+        color: Colors.white,
       ),
-    );
-  }
-
-  Widget _buildStartingBalanceField() {
-    return Container(
-      // alignment: Alignment.center,
-      child: Container(
-        width: 300,
-        child: ListTile(
-          leading: Icon(MaterialCommunityIcons.currency_usd, color: AppColors.govBay,),
-          title: TextFormField(
-            initialValue: account.balance.toString(),
-            // textAlign: TextAlign.center,
-            textCapitalization: TextCapitalization.words,
-            style: TextStyle(
-              fontSize: 20,
-              color: AppColors.govBay,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Starting Balance',
-              hintStyle: TextStyle(
-                fontSize: 20,
-                color: AppColors.govBay,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none
-              // errorBorder: errorInputBorder,
-              // focusedErrorBorder: errorInputBorder
-            ),
-            onSaved: (String value) => account.accountType = value.isNotEmpty ? value : 'Personal',
-            // validator: (String value) => value.isEmpty ? 'You must enter a type' : null,
+      child: Form(
+        key: _formKey,
+        child: Container(
+          margin: EdgeInsets.only(left: 20, right: 20),
+          child: Column(
+            children: <Widget>[
+              _buildAccountCard(),
+              _buildAccountTypeField(),
+              // _buildNotesField(),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildConfirmationField() {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(bottom: 20),
-        alignment: Alignment.bottomCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  Widget _buildAccountTypeField() {
+    return Container(
+      child: GridView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        shrinkWrap: true,
+        itemCount: AccountType.values.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+        ),
+        itemBuilder: (context, i) => _buildAccountTypeItem(
+          AccountDetails(AccountType.values[i]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountTypeItem(AccountDetails details) {
+    return InkWell(
+      onTap: () => setState(
+          () => account.accountDetails.accountType = details.accountType),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: account.accountDetails.accountType == details.accountType
+              ? BorderSide(
+                  color: details.getIconColor(),
+                  width: 3,
+                )
+              : BorderSide.none,
+        ),
+        child: Column(
           children: <Widget>[
-            FlatButton.icon(
-              textColor: AppColors.govBay,
-              label: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontSize: 22
+            Expanded(
+              // flex: 1,
+              child: Container(
+                child: Icon(
+                  details.getIconData(),
+                  color: details.getIconColor(),
                 ),
               ),
-              icon: Icon(MaterialCommunityIcons.cancel),
-              onPressed: () => Navigator.pop(context),
             ),
-            FlatButton.icon(
-              textColor: AppColors.govBay,
-              label: Text(
-                'Save',
-                style: TextStyle(
-                  fontSize: 22
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                alignment: Alignment.center,
+                decoration: ShapeDecoration(
+                  color: details.getIconColor(),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
+                ),
+                child: Text(
+                  details.getString(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-              icon: Icon(MaterialCommunityIcons.check_circle_outline),
-              onPressed: validateForm,
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTypeField() {
+  Widget _buildConfirmation() {
     return Container(
-      // margin: EdgeInsets.symmetric(horizontal: 40),
-      padding: EdgeInsets.only(bottom: 20),
-      // alignment: Alignment.center,
-      child: Container(
-        width: 300,
-        child: ListTile(
-          leading: Icon(MaterialCommunityIcons.bank, color: AppColors.govBay,),
-          title: TextFormField(
-            initialValue: account.accountType,
-            // textAlign: TextAlign.center,
-            textCapitalization: TextCapitalization.words,
-            style: TextStyle(
-              fontSize: 20,
-              color: AppColors.govBay,
-            ),
-            decoration: InputDecoration(
-              // labelStyle: TextStyle(color: AppColors.govBay),
-              // labelText: 'Account Type',
-              hintText: 'Account Type',
-              hintStyle: TextStyle(
-                fontSize: 20,
-                color: AppColors.govBay,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none
-              // errorBorder: errorInputBorder,
-              // focusedErrorBorder: errorInputBorder
-            ),
-            onSaved: (String value) => account.accountType = value.isNotEmpty ? value : 'Personal',
-            // validator: (String value) => value.isEmpty ? 'You must enter a type' : null,
+      alignment: Alignment.bottomRight,
+      child: FlatButton.icon(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        color: Colors.white,
+        textColor: AppColors.seance,
+        label: Text(
+          'Save',
+          style: TextStyle(
+            fontSize: 16,
           ),
+        ),
+        icon: Icon(
+          MaterialCommunityIcons.check_circle_outline,
+        ),
+        onPressed: validateForm,
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: 40),
+          child: _buildForm(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountCard() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: <Widget>[
+        Container(
+          height: 240,
+          margin: EdgeInsets.only(bottom: 10),
+          child: Card(
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Container(
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                gradient: LinearGradient(
+                  colors: [Color(0xFF9D50BB), Color(0xFF6E48AA)],
+                ),
+              ),
+              child: Column(
+                children: <Widget>[
+                  _buildNameField(),
+                  _buildStartingBalanceField(),
+                  _buildStartingBalanceFieldLabel(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        _buildConfirmation(),
+      ],
+    );
+  }
+
+  Widget _buildStartingBalanceFieldLabel() {
+    return Container(
+      child: Text(
+        'Account Balance',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStartingBalanceField() {
+    return Container(
+      width: 200,
+      margin: EdgeInsets.only(top: 20, bottom: 10),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(
+          MaterialCommunityIcons.currency_usd,
+          color: Colors.white,
+          size: 36,
+        ),
+        title: TextFormField(
+          keyboardType: TextInputType.number,
+          style: TextStyle(color: Colors.white, fontSize: 36),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: '0.00',
+            hintStyle: TextStyle(color: Colors.white),
+          ),
+          onSaved: (String value) =>
+              account.balance = value.isEmpty ? 0.00 : double.parse(value),
         ),
       ),
     );
   }
 
   Widget _buildNameField() {
-    return Container(
-      margin: EdgeInsets.only(top: 100, bottom: 20),
-      // alignment: Alignment.center,
-      child: Container(
-        width: 300,
-        child: ListTile(
-          leading: Container(width: 0,),
-          title: TextFormField(
-            initialValue: account.name,
-            textCapitalization: TextCapitalization.words,
-            // textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              color: AppColors.govBay,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Account Name',
-              hintStyle: TextStyle(
-                fontSize: 20,
-                color: AppColors.govBay,
-              ),
-              // labelStyle: TextStyle(color: AppColors.govBay),
-              contentPadding: EdgeInsets.only(top: 30, bottom: 10),
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              // errorBorder: InputBorder.none,
-              // focusedErrorBorder: InputBorder.none
-            ),
-            onSaved: (String value) => account.name = value.isNotEmpty ?value : 'New Account',
-            // validator: (String value) => value.isEmpty ? 'You must enter a name' : null,
-          ),
-        ),
+    return ListTile(
+      leading: Icon(
+        account.accountDetails.getIconData(),
+        color: Colors.white,
       ),
-    );
-  }
-
-  Widget _buildBody2() {
-    return SafeArea(
-      child: Container(
-        width: double.infinity,
-        height: 240,
-        margin: EdgeInsets.only(top: 40),
-        child: Form(
-          key: _formKey,
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
-            ),
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            color: Colors.transparent,
-            child: Container(
-              decoration: ShapeDecoration(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                gradient: LinearGradient(
-                  colors: [Color(0xFF9D50BB), Color(0xFF6E48AA)],
-                )
-              ),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(MaterialCommunityIcons.bank, color: Colors.white,),
-                    title: TextFormField(
-                      decoration: InputDecoration(
-                        hintText: 'New Account',
-                        hintStyle: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          color: Colors.white
-                        ),
-                        border: InputBorder.none
-                      ),
-                    ),
-                    trailing: Icon(MaterialCommunityIcons.circle_edit_outline, color: Colors.white,),
-                  ),
-                  Container(
-                    width: 200,
-                    margin: EdgeInsets.only(top: 40, bottom: 10),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Icon(MaterialCommunityIcons.currency_usd, color: Colors.white, size: 36,),
-                      title: TextFormField(
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36
-                        ),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '0.00',
-                          hintStyle: TextStyle(
-                            color: Colors.white
-                          )
-                        ),
-                      ),
-                    )
-                  ),
-                  Container(
-                    // margin: EdgeInsets.only(),
-                    child: Text('Account Balance', style: TextStyle(color: Colors.white),),
-                  ),
-                ],
-              ),
-            ),
-          ),
+      title: TextFormField(
+        initialValue: account.name,
+        textCapitalization: TextCapitalization.words,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 22,
+          color: Colors.white,
         ),
+        decoration: InputDecoration(
+          hintText: 'New Account',
+          hintStyle: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            color: Colors.white,
+          ),
+          border: InputBorder.none,
+        ),
+        onSaved: (value) =>
+            account.name = value.isEmpty ? 'New Account' : value,
       ),
     );
   }
@@ -312,10 +281,11 @@ class _AccountFormPageState extends State<AccountFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.white,
-      // body: _buildBody(),
-      body: _buildBody2(),
-      bottomNavigationBar: CustomBottomNavigationBar('accountForm', title: widget.account != null ? 'Edit Account' : 'New Account',)
+      body: _buildBody(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        'accountForm',
+        title: widget.account != null ? 'Edit Account' : 'New Account',
+      ),
     );
   }
 }

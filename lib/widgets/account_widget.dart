@@ -42,14 +42,32 @@ class _AccountWidgetState extends State<AccountWidget> {
             Navigator.pushNamed(context, '/account', arguments: account),
         title: GradientText(
           account.name,
-          gradient:
-              LinearGradient(colors: [AppColors.seance, AppColors.redViolet]),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.seance,
+              AppColors.redViolet,
+            ],
+          ),
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(
-          '\t\t\t${account.accountType}',
-          style: TextStyle(
-              fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),
+        subtitle: Container(
+          margin: EdgeInsets.only(left: 10),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                account.accountDetails.getIconData(),
+                color: account.accountDetails.getIconColor(),
+                size: 16,
+              ),
+              Text(
+                '\t\t${account.accountDetails.getString()}',
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
         ),
         trailing: GradientText(
           '\$${account.balance.toStringAsFixed(2)}',
@@ -89,7 +107,8 @@ class _AccountWidgetState extends State<AccountWidget> {
                   label: Text('Yes'),
                   icon: Icon(EvaIcons.checkmarkCircle),
                   onPressed: () {
-                    BlocProvider.of<AccountBloc>(context).dispatch(DeleteAccount(account));
+                    BlocProvider.of<AccountBloc>(context)
+                        .dispatch(DeleteAccount(account));
                     Navigator.pop(context);
                   },
                 )

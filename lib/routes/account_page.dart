@@ -22,11 +22,10 @@ class _AccountPageState extends State<AccountPage> {
   Map<String, List<TransactionItem>> sortedTransactions;
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     sortedTransactions = Map();
     BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
-    // _calcBalance();
   }
 
   void _calcBalance() {
@@ -48,17 +47,21 @@ class _AccountPageState extends State<AccountPage> {
     // print(difference.inDays);
     if (difference.inDays == 0) {
       formattedDate = 'Today';
-    }
-    else if (difference.inDays.isNegative) { // before today
+    } else if (difference.inDays.isNegative) {
+      // before today
       if (difference.inDays == -1) {
         formattedDate = 'Yesterday';
       } else if (difference.inDays < -1 && difference.inDays > -5) {
-        formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY).format(dateTime);
+        formattedDate =
+            DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY).format(dateTime);
       } else {
-        formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
+        formattedDate =
+            DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
       }
-    } else { // future transactions
-      formattedDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
+    } else {
+      // future transactions
+      formattedDate =
+          DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(dateTime);
     }
 
     return formattedDate;
@@ -67,31 +70,36 @@ class _AccountPageState extends State<AccountPage> {
   void sortTransactionsByDate([bool ascending = true]) {
     sortedTransactions.clear();
 
-    for(TransactionItem transaction in account.transactions) {
+    for (TransactionItem transaction in account.transactions) {
       if (sortedTransactions[formatDate(transaction.date)] == null) {
         sortedTransactions[formatDate(transaction.date)] = List();
       }
       sortedTransactions[formatDate(transaction.date)].add(transaction);
     }
 
-    sortedTransactions.forEach((String formattedDate, List<TransactionItem> transactions) {
-      if (transactions.length < 2) 
-      return;
+    sortedTransactions
+        .forEach((String formattedDate, List<TransactionItem> transactions) {
+      if (transactions.length < 2) return;
 
       transactions.sort((TransactionItem item1, TransactionItem item2) {
-        int result = DateTime.parse(item1.date).compareTo(DateTime.parse(item2.date));
-        
-        if (result == 0) { // same day but different time
+        int result =
+            DateTime.parse(item1.date).compareTo(DateTime.parse(item2.date));
+
+        if (result == 0) {
+          // same day but different time
           List<String> item1TimeSplit = item1.time.split(':');
           List<String> item2TimeSplit = item2.time.split(':');
-          
-          result = DateTimeField.convert((TimeOfDay(hour: int.parse(item1TimeSplit[0]), minute: int.parse(item1TimeSplit[1]))))
-            .compareTo(DateTimeField.convert((TimeOfDay(hour: int.parse(item2TimeSplit[0]), minute: int.parse(item2TimeSplit[1])))));
+
+          result = DateTimeField.convert((TimeOfDay(
+                  hour: int.parse(item1TimeSplit[0]),
+                  minute: int.parse(item1TimeSplit[1]))))
+              .compareTo(DateTimeField.convert((TimeOfDay(
+                  hour: int.parse(item2TimeSplit[0]),
+                  minute: int.parse(item2TimeSplit[1])))));
         }
 
-        if (ascending) 
-          return -result;
-        
+        if (ascending) return -result;
+
         return result;
       });
     });
@@ -103,21 +111,18 @@ class _AccountPageState extends State<AccountPage> {
       height: 200,
       child: Card(
         // color: Colors.red,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
                 '\$ ${account.balance.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w300
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w300),
               ),
-              Container(height: 20,),
+              Container(
+                height: 20,
+              ),
               Container(
                 alignment: Alignment.bottomCenter,
                 child: Text(
@@ -139,9 +144,9 @@ class _AccountPageState extends State<AccountPage> {
   List<Widget> _buildSortedTransactions() {
     List<Widget> transactionsWidgets = List();
 
-    sortedTransactions.forEach((String formattedDate, List<TransactionItem> transactions) {
-      transactionsWidgets.add(
-        Container(
+    sortedTransactions
+        .forEach((String formattedDate, List<TransactionItem> transactions) {
+      transactionsWidgets.add(Container(
           margin: EdgeInsets.only(left: 14),
           child: AutoSizeText(
             formattedDate,
@@ -149,13 +154,10 @@ class _AccountPageState extends State<AccountPage> {
               fontWeight: FontWeight.w200,
               // color: AppColors.seance
             ),
-          )
-        )
-      );
+          )));
       transactions.forEach((TransactionItem transaction) {
         transactionsWidgets.add(TransactionWidget(
-          MapEntry<Account, TransactionItem>(account, transaction)
-        ));
+            MapEntry<Account, TransactionItem>(account, transaction)));
       });
     });
 
@@ -168,50 +170,50 @@ class _AccountPageState extends State<AccountPage> {
         _buildBalance(),
         Expanded(
           child: Card(
-            margin: EdgeInsets.symmetric(horizontal: 10,),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+            margin: EdgeInsets.symmetric(
+              horizontal: 10,
             ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: account.transactions.isEmpty
-              ? Center(
-                  child: AutoSizeText('Press the + icon to start adding transactions!'),
-                )
-              : ListView(
-                  padding: EdgeInsets.only(top: 10),
-                  children: _buildSortedTransactions(),
-                ),
+                ? Center(
+                    child: AutoSizeText(
+                        'Press the + icon to start adding transactions!'),
+                  )
+                : ListView(
+                    padding: EdgeInsets.only(top: 10),
+                    children: _buildSortedTransactions(),
+                  ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBody() {    
-    _calcBalance();
+  Widget _buildBody() {
     return SafeArea(
-      child: Container(
-        child: BlocBuilder(
-          bloc: BlocProvider.of<AccountBloc>(context),
-          condition: (AccountState previousState, AccountState currentState) {
-            return (currentState is AccountLoading) || (currentState is AccountLoaded);
-          },
-          builder: (context, AccountState state) {
-            if (state is AccountLoading) {
-              print('loading...');
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is AccountLoaded) {
-              print('Loaded Account: ${account.name}');
-              sortTransactionsByDate();
-              return _buildTransactions();
-            }
+        child: Container(
+            child: BlocBuilder(
+                bloc: BlocProvider.of<AccountBloc>(context),
+                condition:
+                    (AccountState previousState, AccountState currentState) {
+                  return (currentState is AccountLoading) ||
+                      (currentState is AccountLoaded);
+                },
+                builder: (context, AccountState state) {
+                  if (state is AccountLoading) {
+                    print('loading...');
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is AccountLoaded) {
+                    print('Loaded Account: ${account.name}');
+                    sortTransactionsByDate();
+                    return _buildTransactions();
+                  }
 
-            return Container();
-          }
-        )
-      )
-    );
+                  return Container();
+                })));
   }
 
   @override
@@ -219,8 +221,8 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       body: _buildBody(),
       bottomNavigationBar: CustomBottomNavigationBar(
-        'accountPage', 
-        title: account.name, 
+        'accountPage',
+        title: account.name,
         forAccount: account,
       ),
     );

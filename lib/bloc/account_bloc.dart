@@ -28,7 +28,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       return;
     } else if (event is DeleteAccount) {
       await _accountDao.delete(event.account);
-      yield* _reloadAccount(event.account);
+      yield* _reloadAccounts();
       return;
     } else if (event is LoadAccount) {
       yield* _reloadAccount(event.account);
@@ -45,8 +45,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   Stream<AccountState> _reloadAccounts() async* {
     print('Loading all accounts...');
     final List<Account> accounts = await _accountDao.getAll();
-    
-    for(Account account in accounts) {
+
+    for (Account account in accounts) {
       yield* _reloadAccount(account);
     }
 

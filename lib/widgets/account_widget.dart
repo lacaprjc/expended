@@ -1,10 +1,10 @@
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gradient_text/gradient_text.dart';
 
 class AccountWidget extends StatefulWidget {
@@ -25,13 +25,13 @@ class _AccountWidgetState extends State<AccountWidget> {
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: <Widget>[
         IconSlideAction(
-          icon: EvaIcons.editOutline,
+          icon: MaterialCommunityIcons.circle_edit_outline,
           caption: 'Edit',
           color: Colors.deepPurpleAccent,
           onTap: _editAccountPressed,
         ),
         IconSlideAction(
-          icon: EvaIcons.trash2Outline,
+          icon: MaterialCommunityIcons.trash_can_outline,
           caption: 'Delete',
           color: Colors.red,
           onTap: _deleteAccountPressed,
@@ -99,13 +99,13 @@ class _AccountWidgetState extends State<AccountWidget> {
                 FlatButton.icon(
                   textColor: Colors.red,
                   label: Text('No'),
-                  icon: Icon(EvaIcons.stopCircle),
+                  icon: Icon(MaterialCommunityIcons.stop_circle_outline),
                   onPressed: () => Navigator.pop(context),
                 ),
                 FlatButton.icon(
                   textColor: Colors.green,
                   label: Text('Yes'),
-                  icon: Icon(EvaIcons.checkmarkCircle),
+                  icon: Icon(MaterialCommunityIcons.check_circle_outline),
                   onPressed: () {
                     BlocProvider.of<AccountBloc>(context)
                         .dispatch(DeleteAccount(account));

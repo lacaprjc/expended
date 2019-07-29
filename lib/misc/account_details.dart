@@ -12,13 +12,15 @@ enum AccountType {
 
 class AccountDetails {
   AccountType accountType;
+  String notes;
 
-  AccountDetails([this.accountType]) {
+  AccountDetails([this.accountType, this.notes]) {
     accountType = accountType ?? AccountType.Credit;
   }
 
   AccountDetails.fromString(String fromString)
-      : accountType = typeFromString(fromString);
+      : accountType = typeFromString(fromString),
+        notes = '';
 
   String getString() {
     return accountType.toString().split('.').last;

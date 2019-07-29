@@ -1,31 +1,44 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:expended/misc/colors.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final String type;
   final String title;
   final Account forAccount;
 
-  const CustomBottomNavigationBar(this.type, {this.title = 'Accounts', this.forAccount, Key key}) : super(key: key);
+  const CustomBottomNavigationBar(
+    this.type, {
+    this.title = 'Accounts',
+    this.forAccount,
+    Key key,
+  }) : super(key: key);
 
   Widget _buildAddAccountItem(BuildContext context) {
     return IconButton(
-      icon: Icon(EvaIcons.plusSquareOutline),
-      color: Colors.white,
+      icon: Icon(
+        MaterialCommunityIcons.plus_circle_outline,
+      ),
+      color: AppColors.seance,
       onPressed: () => Navigator.pushNamed(context, "/accountForm"),
     );
   }
 
   Widget _buildAddTransactionItem(BuildContext context) {
-    MapEntry<Account, TransactionItem> accountAndTransaction = MapEntry<Account, TransactionItem>(forAccount, TransactionItem());
+    MapEntry<Account, TransactionItem> accountAndTransaction =
+        MapEntry<Account, TransactionItem>(forAccount, TransactionItem());
 
     return IconButton(
-      icon: Icon(EvaIcons.plusSquareOutline),
-      color: Colors.white,
-      onPressed: () => Navigator.pushNamed(context, "/transactionForm", arguments: accountAndTransaction),
+      icon: Icon(MaterialCommunityIcons.plus_circle_outline),
+      color: AppColors.seance,
+      onPressed: () => Navigator.pushNamed(
+        context,
+        "/transactionForm",
+        arguments: accountAndTransaction,
+      ),
     );
   }
 
@@ -36,15 +49,17 @@ class CustomBottomNavigationBar extends StatelessWidget {
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w700,
-        color: Colors.white
+        color: AppColors.seance,
       ),
     );
   }
 
   Widget _buildBackItem(BuildContext context) {
     return IconButton(
-      color: Colors.white,
-      icon: Icon(EvaIcons.arrowBackOutline),
+      color: AppColors.seance,
+      icon: Icon(
+        MaterialCommunityIcons.arrow_left_bold_circle_outline,
+      ),
       onPressed: () => Navigator.pop(context),
     );
   }
@@ -59,45 +74,44 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
     switch (type) {
       case 'transactionForm':
-        items.insert(0, 
-          Expanded(
-            flex: 1,
-            child: _buildBackItem(context),
-          )
-        );
-        items.add(Spacer(flex: 1,));
-        break;
-      case 'accountPage':
-        items.insert(0, 
+        items.insert(
+            0,
             Expanded(
               flex: 1,
               child: _buildBackItem(context),
-          )
-        );
-        items.add(
-          Expanded(
-            flex: 1,
-            child: _buildAddTransactionItem(context),
-          )
-        );
+            ));
+        items.add(Spacer(
+          flex: 1,
+        ));
+        break;
+      case 'accountPage':
+        items.insert(
+            0,
+            Expanded(
+              flex: 1,
+              child: _buildBackItem(context),
+            ));
+        items.add(Expanded(
+          flex: 1,
+          child: _buildAddTransactionItem(context),
+        ));
         break;
       case 'accountForm':
-        items.insert(0, 
-          Expanded(
-            flex: 1,
-            child: _buildBackItem(context),
-          )
-        );
+        items.insert(
+            0,
+            Expanded(
+              flex: 1,
+              child: _buildBackItem(context),
+            ));
         items.add(Spacer(flex: 1));
         break;
       default:
-        items.insert(0, Spacer(flex: 1,));
-        items.add(
-          Expanded(
-            flex: 1,
-            child: _buildAddAccountItem(context)
-          )
-        );
+        items.insert(
+            0,
+            Spacer(
+              flex: 1,
+            ));
+        items.add(Expanded(flex: 1, child: _buildAddAccountItem(context)));
     }
 
     return items;
@@ -107,14 +121,20 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('images/bar_bg.png'),
-          fit: BoxFit.fill,
-        ),
-      ),
+          // image: DecorationImage(
+          //   image: AssetImage('images/bar_bg.png'),
+          //   fit: BoxFit.fill,
+          // ),
+          ),
       height: 80,
-      child: Row(
-        children: _buildItems(context)
+      child: Card(
+        margin: EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: _buildItems(context),
+        ),
       ),
     );
   }

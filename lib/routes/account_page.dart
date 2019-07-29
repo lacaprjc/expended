@@ -10,34 +10,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class AccountPage extends StatefulWidget {
-  final Account account;
-
   AccountPage(this.account, {Key key}) : super(key: key);
+
+  final Account account;
 
   _AccountPageState createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
-  Account get account => widget.account;
-  Map<String, List<TransactionItem>> sortedTransactions;
-
-  @override
-  void initState() {
-    super.initState();
-    sortedTransactions = Map();
-    BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
-  }
-
-  void _calcBalance() {
-    double balance = 0.00;
-
-    account.transactions.forEach((TransactionItem item) {
-      balance += item.amount;
-    });
-
-    account.balance = balance;
-  }
-
   // takes the formatted date (yyyy-mm-dd) and returns 'today' or day of week
   String formatDate(String date) {
     String formattedDate = '';
@@ -45,7 +25,7 @@ class _AccountPageState extends State<AccountPage> {
     Duration difference = dateTime.difference(DateTime.now());
 
     // print(difference.inDays);
-    if (difference.inDays == 0) {
+    if (difference.inDays == 0 && dateTime.day == DateTime.now().day) {
       formattedDate = 'Today';
     } else if (difference.inDays.isNegative) {
       // before today
@@ -67,6 +47,27 @@ class _AccountPageState extends State<AccountPage> {
     return formattedDate;
   }
 
+  Map<String, List<TransactionItem>> sortedTransactions;
+
+  @override
+  void initState() {
+    super.initState();
+    sortedTransactions = Map();
+    BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
+  }
+
+  Account get account => widget.account;
+
+  // void _calcBalance() {
+  //   double balance = 0.00;
+
+  //   account.transactions.forEach((TransactionItem item) {
+  //     balance += item.amount;
+  //   });
+
+  //   account.balance = balance;
+  // }
+
   void sortTransactionsByDate([bool ascending = true]) {
     sortedTransactions.clear();
 
@@ -77,32 +78,40 @@ class _AccountPageState extends State<AccountPage> {
       sortedTransactions[formatDate(transaction.date)].add(transaction);
     }
 
-    sortedTransactions
-        .forEach((String formattedDate, List<TransactionItem> transactions) {
-      if (transactions.length < 2) return;
-
-      transactions.sort((TransactionItem item1, TransactionItem item2) {
-        int result =
-            DateTime.parse(item1.date).compareTo(DateTime.parse(item2.date));
-
-        if (result == 0) {
-          // same day but different time
-          List<String> item1TimeSplit = item1.time.split(':');
-          List<String> item2TimeSplit = item2.time.split(':');
-
-          result = DateTimeField.convert((TimeOfDay(
-                  hour: int.parse(item1TimeSplit[0]),
-                  minute: int.parse(item1TimeSplit[1]))))
-              .compareTo(DateTimeField.convert((TimeOfDay(
-                  hour: int.parse(item2TimeSplit[0]),
-                  minute: int.parse(item2TimeSplit[1])))));
+    sortedTransactions.forEach(
+      (String formattedDate, List<TransactionItem> transactions) {
+        if (transactions.length < 2) {
+          return;
         }
 
-        if (ascending) return -result;
+        transactions.sort(
+          (TransactionItem item1, TransactionItem item2) {
+            int result = DateTime.parse(item1.date).compareTo(
+              DateTime.parse(item2.date),
+            );
 
-        return result;
-      });
-    });
+            if (result == 0) {
+              // same day but different time
+              List<String> item1TimeSplit = item1.time.split(':');
+              List<String> item2TimeSplit = item2.time.split(':');
+
+              result = DateTimeField.convert((TimeOfDay(
+                      hour: int.parse(item1TimeSplit[0]),
+                      minute: int.parse(item1TimeSplit[1]))))
+                  .compareTo(DateTimeField.convert((TimeOfDay(
+                      hour: int.parse(item2TimeSplit[0]),
+                      minute: int.parse(item2TimeSplit[1])))));
+            }
+
+            if (ascending) {
+              return -result;
+            }
+
+            return result;
+          },
+        );
+      },
+    );
   }
 
   Widget _buildBalance() {
@@ -192,28 +201,30 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildBody() {
     return SafeArea(
-        child: Container(
-            child: BlocBuilder(
-                bloc: BlocProvider.of<AccountBloc>(context),
-                condition:
-                    (AccountState previousState, AccountState currentState) {
-                  return (currentState is AccountLoading) ||
-                      (currentState is AccountLoaded);
-                },
-                builder: (context, AccountState state) {
-                  if (state is AccountLoading) {
-                    print('loading...');
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (state is AccountLoaded) {
-                    print('Loaded Account: ${account.name}');
-                    sortTransactionsByDate();
-                    return _buildTransactions();
-                  }
+      child: Container(
+        child: BlocBuilder(
+          bloc: BlocProvider.of<AccountBloc>(context),
+          condition: (AccountState previousState, AccountState currentState) {
+            return (currentState is AccountLoading) ||
+                (currentState is AccountLoaded);
+          },
+          builder: (context, AccountState state) {
+            if (state is AccountLoading) {
+              print('loading...');
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is AccountLoaded) {
+              print('Loaded Account: ${account.name}');
+              sortTransactionsByDate();
+              return _buildTransactions();
+            }
 
-                  return Container();
-                })));
+            return Container();
+          },
+        ),
+      ),
+    );
   }
 
   @override

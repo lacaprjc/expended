@@ -51,20 +51,44 @@ class _AccountFormPageState extends State<AccountFormPage> {
   Widget _buildForm() {
     return DefaultTextStyle(
       style: TextStyle(
-        // fontSize: 20,
         color: Colors.white,
       ),
       child: Form(
         key: _formKey,
         child: Container(
-          margin: EdgeInsets.only(left: 20, right: 20),
+          margin: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: <Widget>[
               _buildAccountCard(),
               _buildAccountTypeField(),
-              // _buildNotesField(),
+              _buildNotesField(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotesField() {
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          10,
+        ),
+      ),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        child: TextFormField(
+          maxLines: null,
+          initialValue: account.accountDetails.notes,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: InputDecoration(
+            hintText: 'Account Notes',
+            border: InputBorder.none,
+          ),
+          onSaved: (String value) => account.accountDetails.notes =
+              value.trim().isEmpty ? '' : value.trim(),
         ),
       ),
     );
@@ -192,7 +216,10 @@ class _AccountFormPageState extends State<AccountFormPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 gradient: LinearGradient(
-                  colors: [Color(0xFF9D50BB), Color(0xFF6E48AA)],
+                  colors: [
+                    Color(0xFF9D50BB),
+                    Color(0xFF6E48AA),
+                  ],
                 ),
               ),
               child: Column(
@@ -235,8 +262,13 @@ class _AccountFormPageState extends State<AccountFormPage> {
           size: 36,
         ),
         title: TextFormField(
+          initialValue:
+              account.balance == 0.00 ? '' : account.balance.toStringAsFixed(2),
           keyboardType: TextInputType.number,
-          style: TextStyle(color: Colors.white, fontSize: 36),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 36,
+          ),
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: '0.00',
@@ -251,9 +283,14 @@ class _AccountFormPageState extends State<AccountFormPage> {
 
   Widget _buildNameField() {
     return ListTile(
-      leading: Icon(
-        account.accountDetails.getIconData(),
-        color: Colors.white,
+      leading: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        switchOutCurve: Curves.easeOut,
+        child: Icon(
+          account.accountDetails.getIconData(),
+          color: Colors.white,
+          key: UniqueKey(),
+        ),
       ),
       title: TextFormField(
         initialValue: account.name,

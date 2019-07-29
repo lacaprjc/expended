@@ -25,8 +25,10 @@ class _AccountsPageState extends State<AccountsPage> {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Card(
-          shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          elevation: 0.5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: BlocBuilder(
             bloc: BlocProvider.of<AccountBloc>(context),
             condition: (AccountState previousState, AccountState currentState) {
@@ -35,13 +37,12 @@ class _AccountsPageState extends State<AccountsPage> {
             },
             builder: (context, AccountState state) {
               if (state is AccountsAllLoading) {
-                return Center(
-                  child: CircularProgressIndicator()
-                );
+                return Center(child: CircularProgressIndicator());
               } else if (state is AccountsLoaded) {
                 if (state.accounts.isEmpty) {
                   return Center(
-                    child: AutoSizeText('Press the + Button to start adding accounts!'),
+                    child: AutoSizeText(
+                        'Press the + Button to start adding accounts!'),
                   );
                 }
 
@@ -49,11 +50,11 @@ class _AccountsPageState extends State<AccountsPage> {
                   itemCount: state.accounts.length,
                   separatorBuilder: (context, i) {
                     return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      child: Divider(
-                        height: 0.1,
-                        color: AppColors.seance,
-                      ));
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        child: Divider(
+                          height: 0.1,
+                          color: AppColors.seance,
+                        ));
                   },
                   itemBuilder: (context, i) {
                     return AccountWidget(state.accounts[i]);

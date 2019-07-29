@@ -7,8 +7,9 @@ import 'package:expended/model/transaction_item.dart';
 class Account {
   int id;
   String name;
-  AccountDetails accountDetails = AccountDetails();
   double balance;
+
+  AccountDetails accountDetails = AccountDetails();
   List<TransactionItem> transactions = List<TransactionItem>();
 
   Account({

@@ -24,6 +24,8 @@ dependencies:
   # flutter_icons: ^0.1.4
   flutter_vector_icons: ^0.2.0
   image_picker: ^0.6.0+17
+  # image_picker_modern: ^0.4.12+2
+  extended_image: ^0.5.3
 
 
 dev_dependencies:

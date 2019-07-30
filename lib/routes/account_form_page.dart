@@ -293,6 +293,7 @@ class _AccountFormPageState extends State<AccountFormPage> {
         ),
       ),
       title: TextFormField(
+        autofocus: true,
         initialValue: account.name,
         textCapitalization: TextCapitalization.words,
         style: TextStyle(

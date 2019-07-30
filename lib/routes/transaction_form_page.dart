@@ -121,80 +121,6 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     setState(() {});
   }
 
-  Widget _buildAmountField() {
-    return Container(
-      margin: EdgeInsets.only(top: 100, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            child: Container(
-              child: Icon(
-                MaterialCommunityIcons.currency_usd,
-                size: 50,
-                color: AppColors.govBay,
-              ),
-            ),
-          ),
-          Container(
-            width: 100,
-            child: TextFormField(
-              initialValue:
-                  transaction.amount != 0 ? transaction.amount.toString() : '',
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w500,
-                color: AppColors.govBay,
-              ),
-              decoration: InputDecoration(
-                hintText: '0.00',
-                hintStyle: TextStyle(color: AppColors.govBay),
-                contentPadding: EdgeInsets.only(top: 30, bottom: 10),
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                focusedErrorBorder: InputBorder.none,
-                errorStyle: TextStyle(height: .1),
-              ),
-              onSaved: (value) => transaction.amount =
-                  value.isNotEmpty ? double.parse(value) : 0.00,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNameField() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 40),
-      padding: EdgeInsets.only(bottom: 20),
-      child: TextFormField(
-        initialValue: transaction.name.isNotEmpty ? transaction.name : '',
-        textAlign: TextAlign.center,
-        textCapitalization: TextCapitalization.words,
-        style: TextStyle(
-          fontSize: 20,
-          color: AppColors.govBay,
-        ),
-        decoration: InputDecoration(
-          hintText: 'Transaction Name',
-          hintStyle: TextStyle(
-            fontSize: 20,
-            color: AppColors.govBay,
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          // border: InputBorder.none,
-        ),
-        onSaved: (value) =>
-            transaction.name = value.isNotEmpty ? value : 'New Transaction',
-      ),
-    );
-  }
-
   Widget _buildDateAndTimeField() {
     return Column(
       children: <Widget>[
@@ -297,38 +223,6 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildConfirmationField() {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(bottom: 20),
-        alignment: Alignment.bottomCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            FlatButton.icon(
-              textColor: AppColors.govBay,
-              label: Text(
-                'Cancel',
-                style: TextStyle(fontSize: 22),
-              ),
-              icon: Icon(MaterialCommunityIcons.cancel),
-              onPressed: () => Navigator.pop(context),
-            ),
-            FlatButton.icon(
-              textColor: AppColors.govBay,
-              label: Text(
-                'Save',
-                style: TextStyle(fontSize: 22),
-              ),
-              icon: Icon(MaterialCommunityIcons.check_circle_outline),
-              onPressed: validateForm,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildImageField() {
     return Container(
       margin: EdgeInsets.only(top: 20),
@@ -382,21 +276,6 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildForm() {
-    return Container(
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _buildAmountField(),
-          _buildNameField(),
-          _buildDateAndTimeField(),
-          _buildImageField(),
-          _buildConfirmationField(),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTransactionCard() {
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -424,8 +303,8 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               ),
               child: Column(
                 children: <Widget>[
-                  _buildNameField2(),
-                  _buildAmountField2(),
+                  _buildNameField(),
+                  _buildAmountField(),
                   _buildAmountFieldLabel(),
                   _buildDateAndTimeField()
                 ],
@@ -474,7 +353,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildAmountField2() {
+  Widget _buildAmountField() {
     return Container(
       width: 200,
       child: ListTile(
@@ -500,14 +379,14 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               // fontSize: 36,
             ),
           ),
-          onSaved: (String value) =>
-              transaction.amount = value.isEmpty ? 0.00 : double.parse(value),
+          onSaved: (String value) => transaction.amount =
+              value.isEmpty ? 0.00 : double.parse(value.replaceAll(',', '')),
         ),
       ),
     );
   }
 
-  Widget _buildNameField2() {
+  Widget _buildNameField() {
     return ListTile(
       leading: Icon(
         MaterialCommunityIcons.receipt,
@@ -536,12 +415,12 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildBody2() {
+  Widget _buildBody() {
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-          child: _buildForm2(),
+          child: _buildForm(),
         ),
       ),
     );
@@ -572,7 +451,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
     );
   }
 
-  Widget _buildForm2() {
+  Widget _buildForm() {
     return Form(
       key: _formKey,
       child: Container(
@@ -593,7 +472,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildBody2(),
+      body: _buildBody(),
       bottomNavigationBar: CustomBottomNavigationBar(
         'transactionForm',
         title: transaction.name.isEmpty ? 'New Transaction' : transaction.name,

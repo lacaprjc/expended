@@ -119,7 +119,6 @@ class _AccountPageState extends State<AccountPage> {
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       height: 200,
       child: Card(
-        // color: Colors.red,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Center(
           child: Column(
@@ -187,7 +186,8 @@ class _AccountPageState extends State<AccountPage> {
             child: account.transactions.isEmpty
                 ? Center(
                     child: AutoSizeText(
-                        'Press the + icon to start adding transactions!'),
+                      'Press the + icon to start adding transactions!',
+                    ),
                   )
                 : ListView(
                     padding: EdgeInsets.only(top: 10),

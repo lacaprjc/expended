@@ -24,7 +24,8 @@
         "**/.DS_Store": true,
         "**/.idea": true,
         "**/.gradle": true,
-        "**/test": true
+        "**/gradle": true,
+        // "**/test": true,
     },
     "editor.formatOnSave": true
 }

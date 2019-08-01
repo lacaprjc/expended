@@ -8,3 +8,5 @@ android/
 \.packages
 
 pubspec\.lock
+
+\.vscode/

@@ -25,8 +25,6 @@ class _SettingsPageState extends State<SettingsPage> {
   static const String APK_URL =
       'https://drive.google.com/drive/folders/1NX00j8iN3RCLcLdQBbQjVwVNWKSH3Mso?usp=sharing';
 
-  void displayError(Error e) => Fluttertoast.showToast(msg: e.toString());
-
   Future<bool> requestPermission() async {
     PermissionStatus status =
         await _permissionHandler.checkPermissionStatus(PermissionGroup.storage);
@@ -47,20 +45,17 @@ class _SettingsPageState extends State<SettingsPage> {
   void backupAccounts() async {
     if (!await requestPermission()) {
       Fluttertoast.showToast(msg: 'Please allow for storage permission.');
-      await _permissionHandler.openAppSettings();
+      await _permissionHandler.requestPermissions([PermissionGroup.storage]);
       return;
     }
 
     final Directory downloadsDirectory =
         await DownloadsPathProvider.downloadsDirectory;
+
     await AppDatabase.instance
         .backupDatabaseToFolder(downloadsDirectory.path)
-        .then((_) {
-      Fluttertoast.showToast(msg: 'Backed up accounts.db to downloads folder');
-    }, onError: (e) {
-      Fluttertoast.showToast(msg: 'Could not backup accounts.');
-      print(e);
-    });
+        .then((_) => Fluttertoast.showToast(
+            msg: 'Backed up accounts.db to downloads folder'));
   }
 
   void restoreAccounts() async {
@@ -72,6 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     final Directory downloadsDirectory =
         await DownloadsPathProvider.downloadsDirectory;
+
     final String accountsDBPath = join(downloadsDirectory.path, 'accounts.db');
     File accountsDBFile = File.fromUri(Uri(path: accountsDBPath));
 
@@ -85,18 +81,16 @@ class _SettingsPageState extends State<SettingsPage> {
         msg: 'Attempting to restore accounts. Please wait...');
 
     Database currentDB = await AppDatabase.instance.database;
-    await currentDB
-        .close()
-        .catchError((e) => Fluttertoast.showToast(msg: e.toString()));
+
+    await currentDB.close();
 
     final String oldDBPath = currentDB.path;
     await File.fromUri(Uri(path: currentDB.path))
-        .rename(currentDB.path + '.backup')
-        .catchError(displayError);
+        .rename(currentDB.path + '.backup');
 
-    await accountsDBFile.copy(oldDBPath).catchError(displayError);
+    await accountsDBFile.copy(oldDBPath);
 
-    await AppDatabase.instance.reopenDatabase().catchError(displayError);
+    await AppDatabase.instance.reopenDatabase();
 
     Fluttertoast.showToast(msg: 'Restored accounts');
     BlocProvider.of<AccountBloc>(this.context).dispatch(LoadAllAccounts());

@@ -264,7 +264,10 @@ class _AccountFormPageState extends State<AccountFormPage> {
         title: TextFormField(
           initialValue:
               account.balance == 0.00 ? '' : account.balance.toStringAsFixed(2),
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+            signed: true,
+          ),
           style: TextStyle(
             color: Colors.white,
             fontSize: 36,

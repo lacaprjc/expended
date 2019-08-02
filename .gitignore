@@ -1,8 +1,6 @@
 
 build/
 
-android/
-
 \.flutter-plugins
 
 \.packages

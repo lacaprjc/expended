@@ -364,6 +364,10 @@ class TransactionFormPageState extends State<TransactionFormPage> {
           size: 36,
         ),
         title: TextFormField(
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+            signed: true,
+          ),
           initialValue: transaction.amount == 0.00
               ? ''
               : transaction.amount.toStringAsFixed(2),

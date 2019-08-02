@@ -17,6 +17,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
+  Widget _buildSettingsItem(BuildContext context) {
+    return IconButton(
+      icon: Icon(MaterialCommunityIcons.settings_outline),
+      color: AppColors.seance,
+      onPressed: () => Navigator.pushNamed(context, '/settings'),
+    );
+  }
+
   Widget _buildAddAccountItem(BuildContext context) {
     return IconButton(
       icon: Icon(
@@ -64,6 +72,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 
+  Widget _buildSaveItem(BuildContext context) {
+    return IconButton(
+      color: AppColors.seance,
+      icon: Icon(MaterialCommunityIcons.content_save_settings_outline),
+      onPressed: null,
+    );
+  }
+
   List<Widget> _buildItems(BuildContext context) {
     List<Widget> items = [
       Expanded(
@@ -73,6 +89,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
     ];
 
     switch (type) {
+      case 'settings':
+        items.insert(
+            0,
+            Expanded(
+              flex: 1,
+              child: _buildBackItem(context),
+            ));
+        items.add(Expanded(
+          flex: 1,
+          child: _buildSaveItem(context),
+        ));
+        break;
       case 'transactionForm':
         items.insert(
             0,
@@ -108,8 +136,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
       default:
         items.insert(
             0,
-            Spacer(
+            Expanded(
               flex: 1,
+              child: _buildSettingsItem(context),
             ));
         items.add(Expanded(flex: 1, child: _buildAddAccountItem(context)));
     }

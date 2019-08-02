@@ -1,11 +1,12 @@
 import 'package:expended/routes/account_page.dart';
+import 'package:expended/routes/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:expended/routes/routes.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-    
+
     switch (settings.name) {
       case '/':
       case '/accounts':
@@ -15,10 +16,13 @@ class RouteGenerator {
       case '/accountForm':
         return MaterialPageRoute(builder: (context) => AccountFormPage(args));
       case '/transactionForm':
-        return MaterialPageRoute(builder: (context) => TransactionFormPage(args));
-      default: 
+        return MaterialPageRoute(
+            builder: (context) => TransactionFormPage(args));
+      case '/settings':
+        return MaterialPageRoute(builder: (context) => SettingsPage());
+      default:
         return _errorRoute();
-    }    
+    }
   }
 
   static Route<dynamic> _errorRoute() {

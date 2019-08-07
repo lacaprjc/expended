@@ -17,14 +17,8 @@ class MyApp extends StatelessWidget {
       builder: (context) => AccountBloc(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Montserrat',
-          scaffoldBackgroundColor: AppColors.whisper,
-          accentColor: AppColors.seance,
-          primaryColor: AppColors.seance,
-          cursorColor: AppColors.seance,
-          iconTheme: IconThemeData(color: AppColors.govBay),
-        ),
+        theme: AppThemes.mainTheme,
+        darkTheme: AppThemes.theme2,
         // darkTheme: ThemeData.dark(),
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,

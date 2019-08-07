@@ -1,5 +1,6 @@
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
+import 'package:expended/misc/formatter.dart';
 import 'package:expended/model/account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +71,7 @@ class _AccountWidgetState extends State<AccountWidget> {
           ),
         ),
         trailing: GradientText(
-          '\$${account.balance.toStringAsFixed(2)}',
+          '\$${Formatter.numberFormat.format(account.balance)}',
           gradient: LinearGradient(
             colors: [AppColors.seance, AppColors.redViolet],
           ),

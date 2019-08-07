@@ -2,6 +2,7 @@ import 'package:expended/bloc/account_bloc.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/account_details.dart';
 import 'package:expended/misc/colors.dart';
+import 'package:expended/misc/formatter.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -215,12 +216,7 @@ class _AccountFormPageState extends State<AccountFormPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF9D50BB),
-                    Color(0xFF6E48AA),
-                  ],
-                ),
+                gradient: AppGradients.accountCard,
               ),
               child: Column(
                 children: <Widget>[
@@ -262,15 +258,16 @@ class _AccountFormPageState extends State<AccountFormPage> {
           size: 36,
         ),
         title: TextFormField(
-          initialValue:
-              account.balance == 0.00 ? '' : account.balance.toStringAsFixed(2),
+          initialValue: account.balance != 0.00
+              ? Formatter.numberFormat.format(account.balance)
+              : '',
           keyboardType: TextInputType.numberWithOptions(
             decimal: true,
             signed: true,
           ),
           style: TextStyle(
             color: Colors.white,
-            fontSize: 36,
+            fontSize: 24,
           ),
           decoration: InputDecoration(
             border: InputBorder.none,
@@ -278,7 +275,7 @@ class _AccountFormPageState extends State<AccountFormPage> {
             hintStyle: TextStyle(color: Colors.white),
           ),
           onSaved: (String value) =>
-              account.balance = value.isEmpty ? 0.00 : double.parse(value),
+              account.balance = Formatter.numberFormat.parse(value),
         ),
       ),
     );

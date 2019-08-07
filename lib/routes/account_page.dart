@@ -1,12 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:expended/bloc/bloc.dart';
+import 'package:expended/misc/colors.dart';
+import 'package:expended/misc/formatter.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:expended/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:intl/intl.dart';
 
 class AccountPage extends StatefulWidget {
@@ -114,41 +117,6 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildBalance() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-      height: 200,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                '\$ ${account.balance.toStringAsFixed(2)}',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w300),
-              ),
-              Container(
-                height: 20,
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  'Current Balance',
-                  style: TextStyle(
-                    fontSize: 12,
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   List<Widget> _buildSortedTransactions() {
     List<Widget> transactionsWidgets = List();
 
@@ -175,7 +143,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildTransactions() {
     return Column(
       children: <Widget>[
-        _buildBalance(),
+        BalanceWidget(account: account),
         Expanded(
           child: Card(
             margin: EdgeInsets.symmetric(
@@ -236,6 +204,85 @@ class _AccountPageState extends State<AccountPage> {
         title: account.name,
         forAccount: account,
       ),
+    );
+  }
+}
+
+class BalanceWidget extends StatelessWidget {
+  const BalanceWidget({
+    Key key,
+    @required this.account,
+  }) : super(key: key);
+
+  final Account account;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+          height: 200,
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Container(
+              decoration: ShapeDecoration(
+                gradient: AppGradients.accountCard,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    AutoSizeText(
+                      '\$ ${Formatter.numberFormat.format(account.balance)}',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Container(
+                      height: 20,
+                    ),
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        'Current Balance',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          alignment: Alignment.bottomRight,
+          margin: EdgeInsets.only(right: 20),
+          child: FlatButton.icon(
+            icon: Icon(MaterialCommunityIcons.circle_edit_outline),
+            color: Colors.white,
+            label: Text('Edit'),
+            textColor: AppColors.seance,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            onPressed: () => Navigator.pushNamed(context, '/accountForm',
+                arguments: account),
+          ),
+        ),
+      ],
     );
   }
 }

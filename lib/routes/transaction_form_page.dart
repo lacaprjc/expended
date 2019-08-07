@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
+import 'package:expended/misc/formatter.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
@@ -13,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 class TransactionFormPage extends StatefulWidget {
   TransactionFormPage(this.accountAndTransaction, {Key key}) : super(key: key);
@@ -32,6 +32,11 @@ class TransactionFormPageState extends State<TransactionFormPage> {
   Account get account => widget.accountAndTransaction.key;
 
   TransactionItem get transaction => widget.accountAndTransaction.value;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -144,7 +149,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
-                format: DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY),
+                format: Formatter.dateFormat,
                 readOnly: true,
                 decoration: InputDecoration(
                   border: inputBorder,
@@ -187,7 +192,7 @@ class TransactionFormPageState extends State<TransactionFormPage> {
                             .substring(0, transaction.time.indexOf(':'))),
                         minute: int.parse(transaction.time.split(':')[1])))
                     : DateTime.now(),
-                format: DateFormat(DateFormat.HOUR_MINUTE),
+                format: Formatter.timeFormat,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -368,9 +373,9 @@ class TransactionFormPageState extends State<TransactionFormPage> {
             decimal: true,
             signed: true,
           ),
-          initialValue: transaction.amount == 0.00
-              ? ''
-              : transaction.amount.toStringAsFixed(2),
+          initialValue: transaction.amount != 0.00
+              ? Formatter.numberFormat.format(transaction.amount)
+              : '',
           style: TextStyle(
             color: Colors.white,
             fontSize: 36,
@@ -383,8 +388,8 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               // fontSize: 36,
             ),
           ),
-          onSaved: (String value) => transaction.amount =
-              value.isEmpty ? 0.00 : double.parse(value.replaceAll(',', '')),
+          onSaved: (String value) =>
+              transaction.amount = Formatter.numberFormat.parse(value),
         ),
       ),
     );

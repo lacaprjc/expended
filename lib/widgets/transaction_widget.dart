@@ -1,12 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:expended/bloc/bloc.dart';
 import 'package:expended/misc/colors.dart';
+import 'package:expended/misc/formatter.dart';
 import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:intl/intl.dart';
 
 class TransactionWidget extends StatefulWidget {
   TransactionWidget(this.accountAndTransaction, {Key key}) : super(key: key);
@@ -17,6 +19,8 @@ class TransactionWidget extends StatefulWidget {
 }
 
 class _TransactionWidgetState extends State<TransactionWidget> {
+  static final NumberFormat numberFormat = NumberFormat('#.##');
+
   Account get account => widget.accountAndTransaction.key;
 
   TransactionItem get transaction => widget.accountAndTransaction.value;
@@ -94,7 +98,8 @@ class _TransactionWidgetState extends State<TransactionWidget> {
         title: AutoSizeText(
           transaction.name,
         ),
-        trailing: AutoSizeText(transaction.amount.toString()),
+        trailing:
+            AutoSizeText(Formatter.numberFormat.format(transaction.amount)),
       ),
     );
   }

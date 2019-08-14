@@ -4,6 +4,7 @@ import 'package:expended/model/account.dart';
 import 'package:expended/model/transaction_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:provider/provider.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final String type;
@@ -36,16 +37,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
   }
 
   Widget _buildAddTransactionItem(BuildContext context) {
-    MapEntry<Account, TransactionItem> accountAndTransaction =
-        MapEntry<Account, TransactionItem>(forAccount, TransactionItem());
-
     return IconButton(
       icon: Icon(MaterialCommunityIcons.plus_circle_outline),
       color: AppColors.seance,
       onPressed: () => Navigator.pushNamed(
         context,
         "/transactionForm",
-        arguments: accountAndTransaction,
+        arguments: TransactionItem(forAccount: Provider.of<Account>(context)),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:expended/model/account.dart';
+
 class TransactionItem {
   int id;
   // int forAccount;
@@ -8,6 +10,9 @@ class TransactionItem {
   String notes;
   List<int> image;
 
+  bool isEditing;
+  Account forAccount;
+
   TransactionItem({
     this.amount = 0.00,
     this.date = '',
@@ -15,6 +20,8 @@ class TransactionItem {
     this.name = '',
     this.notes = '',
     this.image,
+    this.forAccount,
+    this.isEditing = false,
   }) {
     if (image == null) {
       image = List();

@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:expended/bloc/bloc.dart';
+import 'package:expended/misc/formatter.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path/path.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:expended/database/db.dart';
 import 'package:expended/misc/colors.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sembast/sembast.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({Key key}) : super(key: key);
@@ -21,9 +22,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final PermissionHandler _permissionHandler = PermissionHandler();
-
-  static const String APK_URL =
-      'https://drive.google.com/drive/folders/1NX00j8iN3RCLcLdQBbQjVwVNWKSH3Mso?usp=sharing';
 
   Future<bool> requestPermission() async {
     PermissionStatus status =
@@ -42,6 +40,48 @@ class _SettingsPageState extends State<SettingsPage> {
     return status == PermissionStatus.granted;
   }
 
+  void requestBackup(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            FlatButton(
+              textColor: AppColors.seance,
+              child: Text('Save to Downloads folders'),
+              onPressed: () {
+                Navigator.pop(context);
+                backupAccounts();
+              },
+            ),
+            FlatButton(
+              textColor: AppColors.seance,
+              child: Text('Export'),
+              onPressed: () {
+                Navigator.pop(context);
+                exportAccounts();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void exportAccounts() async {
+    Database db = await AppDatabase.instance.database;
+    File dbFile = File.fromUri(Uri(path: db.path));
+
+    await WcFlutterShare.share(
+      sharePopupTitle: 'Make sure to save this to Google Drive',
+      mimeType: 'application/octet-stream',
+      fileName: 'Expended_${Formatter.dateFormat.format(DateTime.now())}.db',
+      bytesOfFile: await dbFile.readAsBytes(),
+    );
+  }
+
   void backupAccounts() async {
     if (!await requestPermission()) {
       Fluttertoast.showToast(msg: 'Please allow for storage permission.');
@@ -54,8 +94,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
     await AppDatabase.instance
         .backupDatabaseToFolder(downloadsDirectory.path)
-        .then((_) => Fluttertoast.showToast(
-            msg: 'Backed up accounts.db to downloads folder'));
+        .then((_) =>
+            Fluttertoast.showToast(msg: 'Backed up to downloads folder'));
   }
 
   void restoreAccounts() async {
@@ -65,15 +105,13 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
 
-    final Directory downloadsDirectory =
-        await DownloadsPathProvider.downloadsDirectory;
+    File newDBFile = await FilePicker.getFile(type: FileType.ANY);
+    if (newDBFile == null) {
+      return;
+    }
 
-    final String accountsDBPath = join(downloadsDirectory.path, 'accounts.db');
-    File accountsDBFile = File.fromUri(Uri(path: accountsDBPath));
-
-    if (!await accountsDBFile.exists()) {
-      Fluttertoast.showToast(
-          msg: 'accounts.db does not exist in the downloads folder.');
+    if (newDBFile.path.substring(newDBFile.path.length - 3) != '.db') {
+      await Fluttertoast.showToast(msg: 'Invalid database file');
       return;
     }
 
@@ -88,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
     await File.fromUri(Uri(path: currentDB.path))
         .rename(currentDB.path + '.backup');
 
-    await accountsDBFile.copy(oldDBPath);
+    await newDBFile.copy(oldDBPath);
 
     await AppDatabase.instance.reopenDatabase();
 
@@ -96,15 +134,7 @@ class _SettingsPageState extends State<SettingsPage> {
     BlocProvider.of<AccountBloc>(this.context).dispatch(LoadAllAccounts());
   }
 
-  void openAPKFolder() async {
-    if (await canLaunch(APK_URL)) {
-      await launch(APK_URL);
-    } else {
-      Fluttertoast.showToast(msg: 'Could not open the link');
-    }
-  }
-
-  Widget _buildBackupSettings() {
+  Widget _buildBackupSettings(BuildContext context) {
     return Container(
       child: ListTile(
         leading: Icon(
@@ -127,7 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
             FlatButton(
               textColor: AppColors.seance,
               child: Text('Backup Accounts'),
-              onPressed: backupAccounts,
+              onPressed: () => requestBackup(context),
             ),
             FlatButton(
               textColor: AppColors.seance,
@@ -140,35 +170,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildUpdateSettings() {
-    return Container(
-      child: ListTile(
-        leading: Icon(
-          MaterialCommunityIcons.upload_outline,
-          color: AppColors.seance,
-        ),
-        title: Container(
-          child: Text(
-            'Update',
-            style:
-                TextStyle(color: AppColors.seance, fontWeight: FontWeight.w600),
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            FlatButton(
-              textColor: AppColors.seance,
-              child: Text('Open download links'),
-              onPressed: openAPKFolder,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return SafeArea(
       child: Container(
         margin: EdgeInsets.all(10),
@@ -178,8 +180,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           child: ListView(
             children: <Widget>[
-              _buildBackupSettings(),
-              _buildUpdateSettings(),
+              _buildBackupSettings(context),
             ],
           ),
         ),
@@ -190,7 +191,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildBody(),
+      body: _buildBody(context),
       bottomNavigationBar: CustomBottomNavigationBar(
         'settings',
         title: 'Settings',

@@ -11,16 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AccountPage extends StatefulWidget {
-  AccountPage(this.account, {Key key}) : super(key: key);
-
-  final Account account;
+  AccountPage({Key key}) : super(key: key);
 
   _AccountPageState createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
+  Account account;
+
   // takes the formatted date (yyyy-mm-dd) and returns 'today' or day of week
   String formatDate(String date) {
     String formattedDate = '';
@@ -56,20 +57,15 @@ class _AccountPageState extends State<AccountPage> {
   void initState() {
     super.initState();
     sortedTransactions = Map();
-    BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
   }
 
-  Account get account => widget.account;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  // void _calcBalance() {
-  //   double balance = 0.00;
-
-  //   account.transactions.forEach((TransactionItem item) {
-  //     balance += item.amount;
-  //   });
-
-  //   account.balance = balance;
-  // }
+    account = Provider.of<Account>(context);
+    BlocProvider.of<AccountBloc>(context).dispatch(LoadAccount(account));
+  }
 
   void sortTransactionsByDate([bool ascending = true]) {
     sortedTransactions.clear();
@@ -132,8 +128,7 @@ class _AccountPageState extends State<AccountPage> {
             ),
           )));
       transactions.forEach((TransactionItem transaction) {
-        transactionsWidgets.add(TransactionWidget(
-            MapEntry<Account, TransactionItem>(account, transaction)));
+        transactionsWidgets.add(TransactionWidget(transaction));
       });
     });
 
@@ -276,8 +271,9 @@ class BalanceWidget extends StatelessWidget {
             color: Colors.white,
             label: Text('Edit'),
             textColor: AppColors.seance,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             onPressed: () => Navigator.pushNamed(context, '/accountForm',
                 arguments: account),
           ),

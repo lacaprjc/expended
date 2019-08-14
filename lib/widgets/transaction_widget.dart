@@ -8,28 +8,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TransactionWidget extends StatefulWidget {
-  TransactionWidget(this.accountAndTransaction, {Key key}) : super(key: key);
-
-  final MapEntry<Account, TransactionItem> accountAndTransaction;
+  final TransactionItem transactionItem;
+  TransactionWidget(this.transactionItem, {Key key}) : super(key: key);
 
   _TransactionWidgetState createState() => _TransactionWidgetState();
 }
 
 class _TransactionWidgetState extends State<TransactionWidget> {
-  static final NumberFormat numberFormat = NumberFormat('#.##');
+  Account account;
+  TransactionItem get transaction => widget.transactionItem;
 
-  Account get account => widget.accountAndTransaction.key;
-
-  TransactionItem get transaction => widget.accountAndTransaction.value;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    account = Provider.of<Account>(context);
+    transaction.forAccount = account;
+  }
 
   void _transactionPressed() {
+    transaction.isEditing = true;
     Navigator.pushNamed(
       context,
       '/transactionForm',
-      arguments: widget.accountAndTransaction,
+      arguments: transaction,
     );
   }
 

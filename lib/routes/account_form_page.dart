@@ -8,35 +8,34 @@ import 'package:expended/widgets/custom_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:provider/provider.dart';
 
 class AccountFormPage extends StatefulWidget {
-  AccountFormPage(this.account, {Key key}) : super(key: key);
-
-  final Account account;
+  AccountFormPage({Key key}) : super(key: key);
 
   _AccountFormPageState createState() => _AccountFormPageState();
 }
 
 class _AccountFormPageState extends State<AccountFormPage> {
-  Account _account;
+  Account account;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    if (account == null) {
-      _account = Account();
-    }
-
     super.initState();
   }
 
-  Account get account => widget.account ?? _account;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    account = Provider.of<Account>(context) ?? Account();
+  }
 
   void validateForm() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      if (widget.account == null) {
+      if (account.id == null) {
         BlocProvider.of<AccountBloc>(context).dispatch(AddAccount(account));
       } else {
         BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(
@@ -274,8 +273,8 @@ class _AccountFormPageState extends State<AccountFormPage> {
             hintText: '0.00',
             hintStyle: TextStyle(color: Colors.white),
           ),
-          onSaved: (String value) =>
-              account.balance = Formatter.numberFormat.parse(value),
+          onSaved: (String value) => account.balance =
+              Formatter.numberFormat.parse(value.padLeft(1, '0')),
         ),
       ),
     );
@@ -322,7 +321,7 @@ class _AccountFormPageState extends State<AccountFormPage> {
       body: _buildBody(),
       bottomNavigationBar: CustomBottomNavigationBar(
         'accountForm',
-        title: widget.account != null ? 'Edit Account' : 'New Account',
+        title: account.id != null ? 'Edit Account' : 'New Account',
       ),
     );
   }

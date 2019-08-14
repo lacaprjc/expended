@@ -14,28 +14,26 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class TransactionFormPage extends StatefulWidget {
-  TransactionFormPage(this.accountAndTransaction, {Key key}) : super(key: key);
-
-  final MapEntry<Account, TransactionItem> accountAndTransaction;
+  TransactionFormPage({Key key}) : super(key: key);
 
   TransactionFormPageState createState() => TransactionFormPageState();
 }
 
 class TransactionFormPageState extends State<TransactionFormPage> {
+  TransactionItem transaction;
+
   final UnderlineInputBorder inputBorder =
       UnderlineInputBorder(borderSide: BorderSide(color: Colors.white));
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Account get account => widget.accountAndTransaction.key;
-
-  TransactionItem get transaction => widget.accountAndTransaction.value;
-
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    transaction = Provider.of<TransactionItem>(context) ?? TransactionItem();
   }
 
   @override
@@ -46,19 +44,19 @@ class TransactionFormPageState extends State<TransactionFormPage> {
 
   void validateForm() {
     if (_formKey.currentState.validate()) {
-      bool isEdit = transaction.amount !=
-          0; // This tells whether the transaction is new or is being edited
+      Account account = transaction.forAccount;
+      account.balance -= transaction.amount;
+
       _formKey.currentState.save();
 
-      if (!isEdit) {
-        // new
+      if (!transaction.isEditing) {
         account.transactions.add(transaction);
       }
 
       account.balance += transaction.amount;
       BlocProvider.of<AccountBloc>(context).dispatch(UpdateAccount(account, {
         'balance': account.balance,
-        'transactions': account.transactionsToJson()
+        'transactions': account.transactionsToJson(),
       }));
 
       Navigator.pop(context);
@@ -388,8 +386,8 @@ class TransactionFormPageState extends State<TransactionFormPage> {
               // fontSize: 36,
             ),
           ),
-          onSaved: (String value) =>
-              transaction.amount = Formatter.numberFormat.parse(value),
+          onSaved: (String value) => transaction.amount =
+              Formatter.numberFormat.parse(value.padLeft(1, '0')),
         ),
       ),
     );

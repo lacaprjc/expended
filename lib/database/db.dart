@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:expended/misc/formatter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart';
@@ -34,7 +35,8 @@ class AppDatabase {
     final appDocumentDirectory = await getApplicationDocumentsDirectory();
     final databasePath = join(appDocumentDirectory.path, DATABASE_FILENAME);
 
-    final backupPath = join(folder, 'accounts.db');
+    final backupPath = join(
+        folder, 'Expended_${Formatter.dateFormat.format(DateTime.now())}.db');
 
     File databaseFile = File.fromUri(Uri.file(databasePath));
     return await databaseFile.copy(backupPath);
